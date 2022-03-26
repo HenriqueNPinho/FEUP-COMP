@@ -9,8 +9,25 @@ TOKEN :
 	< MINUS : "-" > |
 	< TIMES : "*" > |
 	< DIVIDE : "/" > |
+	< LOWER_THAN : "<" > |
+	< GREATER_THAN : ">" > |
+	< EQUAL : "=" > |
+	< LOWER_EQUAL_THAN : "<=" > |
+	< GREATER_EQUAL_THAN : ">=" > |
+	< EQUAL_EQUAL : "==" > |
 	< OPEN_PAREN : "(" > |
 	< CLOSE_PAREN : ")" > |
+	< OPEN_SQUARE_PAREN : "[" > |
+	< CLOSE_SQUARE_PAREN : "]" > |
+	< OPEN_CURLY_PAREN : "{" > |
+	< CLOSE_CURLY_PAREN : "}" > |
+	< COMMA : "," > |
+	< DOUBLE_DOT : ":" > |
+	< DOT : "." > |
+	< END_EXPRESSION : ";" > |
+	< TRUE : "true" > |
+	< FALSE : "false" > |
+	< NULL : "null" > |
 	< INTEGER : (["0" - "9"])+ >
 ;
 
