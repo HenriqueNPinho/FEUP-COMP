@@ -25,6 +25,22 @@ TOKEN :
 	< DOUBLE_DOT : ":" > |
 	< DOT : "." > |
 	< END_EXPRESSION : ";" > |
+	< IMPORT : "import" > |
+	< CLASS : "class" > |
+	< EXTENDS : "extends" > |
+	< BOOLEAN : "boolean" > |
+	< PUBLIC : "public" > |
+	< RETURN : "return" > |
+	< STATIC : "static" > |
+	< VOID : "void" > |
+	< MAIN : "main" > |
+	< STRING : "String" > |
+	< IF : "if" > |
+	< ELSE : "else" > |
+	< WHILE : "while" > |
+	< LENGTH : "length" > |
+	< THIS : "this" > |
+	< NEW : "new" > |
 	< TRUE : "true" > |
 	< FALSE : "false" > |
 	< NULL : "null" > |
