@@ -10,11 +10,8 @@ TOKEN :
 	< TIMES : "*" > |
 	< DIVIDE : "/" > |
 	< LOWER_THAN : "<" > |
-	< GREATER_THAN : ">" > |
 	< EQUAL : "=" > |
-	< LOWER_EQUAL_THAN : "<=" > |
-	< GREATER_EQUAL_THAN : ">=" > |
-	< EQUAL_EQUAL : "==" > |
+    < AND : "&&" > |
 	< OPEN_PAREN : "(" > |
 	< CLOSE_PAREN : ")" > |
 	< OPEN_SQUARE_PAREN : "[" > |
@@ -44,7 +41,8 @@ TOKEN :
 	< TRUE : "true" > |
 	< FALSE : "false" > |
 	< NULL : "null" > |
-	< INTEGER : (["0" - "9"])+ >
+	< INTEGER : (["0" - "9"])+ > |
+	< IDENTIFIER : (["A" - "Z", "a" - "z"] | "_" | "$") ((["A" - "Z", "a" - "z", "0" - "9"] | "_" | "$"))* >
 ;
 
 Start : AdditiveExpression <EOF> ;
@@ -70,3 +68,37 @@ Factor :
 	< MINUS> Factor |
 	< OPEN_PAREN > AdditiveExpression < CLOSE_PAREN >
 ;
+
+Program :
+    ImportDeclaration ClassDeclaration < EOF >
+;
+
+ImportDeclaration :
+    (
+        < IMPORT > < IDENTIFIER > ( < DOT > < IDENTIFIER > )* < END_EXPRESSION >
+    )*
+;
+
+ClassDeclaration :
+    < CLASS > < IDENTIFIER > (< EXTENDS > < IDENTIFIER >)? < OPEN_CURLY_PAREN > (VarDeclaration)* (MethodDeclaration)* < CLOSE_CURLY_BRACKET >
+;
+
+VarDeclaration :
+    < TYPE > < IDENTIFIER > <END_EXPRESSION>
+;
+
+MethodDeclaration:
+
+Type :
+    < INTEGER > < OPEN_SQUARE_PAREN > < CLOSE_SQUARE_PAREN > |
+    < BOOLEAN > |
+    < INTEGER > |
+    < IDENTIFIER >
+;
+
+Statement:
+
+Expression:
+
+
+
