@@ -9,9 +9,40 @@ TOKEN :
 	< MINUS : "-" > |
 	< TIMES : "*" > |
 	< DIVIDE : "/" > |
+	< LOWER_THAN : "<" > |
+	< EQUAL : "=" > |
+    < AND : "&&" > |
 	< OPEN_PAREN : "(" > |
 	< CLOSE_PAREN : ")" > |
-	< INTEGER : (["0" - "9"])+ >
+	< OPEN_SQUARE_PAREN : "[" > |
+	< CLOSE_SQUARE_PAREN : "]" > |
+	< OPEN_CURLY_PAREN : "{" > |
+	< CLOSE_CURLY_PAREN : "}" > |
+	< COMMA : "," > |
+	< DOUBLE_DOT : ":" > |
+	< DOT : "." > |
+	< END_EXPRESSION : ";" > |
+	< IMPORT : "import" > |
+	< CLASS : "class" > |
+	< EXTENDS : "extends" > |
+	< BOOLEAN : "boolean" > |
+	< PUBLIC : "public" > |
+	< RETURN : "return" > |
+	< STATIC : "static" > |
+	< VOID : "void" > |
+	< MAIN : "main" > |
+	< STRING : "String" > |
+	< IF : "if" > |
+	< ELSE : "else" > |
+	< WHILE : "while" > |
+	< LENGTH : "length" > |
+	< THIS : "this" > |
+	< NEW : "new" > |
+	< TRUE : "true" > |
+	< FALSE : "false" > |
+	< NULL : "null" > |
+	< INTEGER : (["0" - "9"])+ > |
+	< IDENTIFIER : (["A" - "Z", "a" - "z"] | "_" | "$") ((["A" - "Z", "a" - "z", "0" - "9"] | "_" | "$"))* >
 ;
 
 Start : AdditiveExpression <EOF> ;
@@ -37,3 +68,37 @@ Factor :
 	< MINUS> Factor |
 	< OPEN_PAREN > AdditiveExpression < CLOSE_PAREN >
 ;
+
+Program :
+    ImportDeclaration ClassDeclaration < EOF >
+;
+
+ImportDeclaration :
+    (
+        < IMPORT > < IDENTIFIER > ( < DOT > < IDENTIFIER > )* < END_EXPRESSION >
+    )*
+;
+
+ClassDeclaration :
+    < CLASS > < IDENTIFIER > (< EXTENDS > < IDENTIFIER >)? < OPEN_CURLY_PAREN > (VarDeclaration)* (MethodDeclaration)* < CLOSE_CURLY_BRACKET >
+;
+
+VarDeclaration :
+    < TYPE > < IDENTIFIER > <END_EXPRESSION>
+;
+
+MethodDeclaration:
+
+Type :
+    < INTEGER > < OPEN_SQUARE_PAREN > < CLOSE_SQUARE_PAREN > |
+    < BOOLEAN > |
+    < INTEGER > |
+    < IDENTIFIER >
+;
+
+Statement:
+
+Expression:
+
+
+
