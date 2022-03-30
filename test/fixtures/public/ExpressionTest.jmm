@@ -1,0 +1,7 @@
+new int[2+2]
+true && false
+2+2.length
+new x()
+!true
+(new int[2+2])
+(new int[2+2]) && (new int[2+2]).length

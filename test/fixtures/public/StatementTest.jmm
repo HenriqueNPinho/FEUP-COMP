@@ -1,1 +1,1 @@
-if () x =; else x=;
+if (true) x = new int[3 + 3]; else x = !true;
