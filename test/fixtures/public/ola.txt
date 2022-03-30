@@ -1,7 +1,0 @@
-"public" , Type , Identifier , "(" ,[Type, Identifier , { "," , Type , Identifier }, ], ")" , "{" , { VarDeclara-
-tion }, { Statement }, "return" , Expression , ";" , "}"
-|
- "public" , "static" , "void" , "main" , "(" , "String" , "[" ,
-"]" , Identifier , ")" , "{" , { VarDeclaration }, { State-
-ment }, "}"
-

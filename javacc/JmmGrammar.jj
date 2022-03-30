@@ -22,7 +22,7 @@ TOKEN :
 	< DOUBLE_DOT : ":" > |
 	< DOT : "." > |
 	< END_EXPRESSION : ";" > |
-	< NOT   : "!" > |
+	< NOT : "!" > |
 	< IMPORT : "import" > |
 	< CLASS : "class" > |
 	< EXTENDS : "extends" > |
@@ -47,7 +47,7 @@ TOKEN :
 	< IDENTIFIER : (["A" - "Z", "a" - "z"] | "_" | "$") ((["A" - "Z", "a" - "z", "0" - "9"] | "_" | "$"))* >
 ;
 
-Start : VarDeclaration <EOF> ;
+Start : MethodDeclaration <EOF> ;
 
 AdditiveExpression :
 	MultiplicativeExpression
@@ -72,7 +72,7 @@ Factor :
 ;
 
 Program :
-    ImportDeclaration /*ClassDeclaration*/ < EOF >
+    ImportDeclaration ClassDeclaration < EOF >
 ;
 
 ImportDeclaration :
@@ -82,46 +82,47 @@ ImportDeclaration :
 ;
 
 Type :
-    < INT > (< OPEN_SQUARE_PAREN >  < CLOSE_SQUARE_PAREN >)?|
+    < INT > (< OPEN_SQUARE_PAREN >  < CLOSE_SQUARE_PAREN >)? |
     < BOOLEAN > |
     < IDENTIFIER >
 ;
 
 ClassDeclaration :
-    < CLASS > < IDENTIFIER > (< EXTENDS > < IDENTIFIER >)? < OPEN_CURLY_PAREN > (VarDeclaration)* /*(MethodDeclaration)* */< CLOSE_CURLY_PAREN >
+    < CLASS > < IDENTIFIER > (< EXTENDS > < IDENTIFIER >)? < OPEN_CURLY_PAREN > (VarDeclaration)* (MethodDeclaration)*  < CLOSE_CURLY_PAREN >
 ;
 
 VarDeclaration :
-    Type < IDENTIFIER > <END_EXPRESSION>
+    Type < IDENTIFIER > < END_EXPRESSION >
 ;
 
 MethodDeclaration:
-    < PUBLIC > Type < IDENTIFIER > < OPEN_PAREN > (Type < IDENTIFIER > ( < COMMA > Type < IDENTIFIER >)* )? < CLOSE_PAREN > <OPEN_CURLY_PAREN > (VarDeclaration)*
-    (Statement)*  < RETURN > Expression < END_EXPRESSION > <CLOSE_CURLY_PAREN> |
-    < PUBLIC > <STATIC> <VOID> <MAIN> <OPEN_PAREN> <STRING> <OPEN_SQUARE_PAREN> <CLOSE_SQUARE_PAREN> <IDENTIFIER> <CLOSE_PAREN> <OPEN_CURLY_PAREN>
-    (VarDeclaration)* (Statement)* <CLOSE_CURLY_BRACKET>
-
-    ;
-
-ExpressionFirst:
-    < INTEGER > | < FALSE > | < TRUE > | <IDENTIFIER> | < THIS >
+    < PUBLIC > Type < IDENTIFIER > < OPEN_PAREN > (Type < IDENTIFIER > (< COMMA > Type < IDENTIFIER >)* )? < CLOSE_PAREN > < OPEN_CURLY_PAREN > (VarDeclaration)*
+    (Statement)* < RETURN > /*Expression*/ < END_EXPRESSION > < CLOSE_CURLY_PAREN > |
+    < PUBLIC > < STATIC > < VOID > < MAIN > < OPEN_PAREN > < STRING > < OPEN_SQUARE_PAREN > < CLOSE_SQUARE_PAREN > < IDENTIFIER > < CLOSE_PAREN > < OPEN_CURLY_PAREN >
+    (VarDeclaration)* (Statement)* < CLOSE_CURLY_PAREN >
 ;
+/*
+ExpressionFirst:
+    < INTEGER > | < FALSE > | < TRUE > | < IDENTIFIER > | < THIS >
+;
+
 Expression:
     ExpressionFirst
-    | Expression ( <AND> | < LOWER_THAN > | <PLUS> | < MINUS > | <TIMES> | <DIVIDE>) Expression
-    | Expression < OPEN_SQUARE_PAREN> Expression <CLOSE_SQUARE_PAREN>
-    | Expression <DOT> < LENGTH >
-    | Expression <DOT> <IDENTIFIER> <OPEN_PAREN> (Expression (<COMMA> Expression )* )? <CLOSE_PAREN>
-    | <NEW> <INT> <OPEN_SQUARE_PAREN> Expression <CLOSE_SQUARE_PAREN>
-    | <NEW> <IDENTIFIER> <OPEN_PAREN> <CLOSE_PAREN>
-    | <NOT> Expression
-    | <OPEN_PAREN> Expression <CLOSE_PAREN>
-    ;
-
-/*
-Statement:
-
-
-
+    | Expression ( < AND > | < LOWER_THAN > | < PLUS > | < MINUS > | < TIMES > | < DIVIDE >) Expression
+    | Expression < OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN >
+    | Expression < DOT > < LENGTH >
+    | Expression < DOT > < IDENTIFIER > < OPEN_PAREN > (Expression (< COMMA > Expression )* )? < CLOSE_PAREN >
+    | < NEW > < INT > < OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN >
+    | < NEW > < IDENTIFIER > < OPEN_PAREN > < CLOSE_PAREN >
+    | < NOT > Expression
+    | < OPEN_PAREN > Expression < CLOSE_PAREN >
+;
 */
+Statement:
+    < OPEN_CURLY_PAREN > (Statement)* < CLOSE_CURLY_PAREN > |
+    < IF > < OPEN_PAREN > /*Expression*/ < CLOSE_PAREN > Statement < ELSE > Statement |
+    < WHILE > < OPEN_PAREN > /*Expression*/ < CLOSE_PAREN > Statement |
+    /*Expression*/ < END_EXPRESSION > |
+    < IDENTIFIER > ( < EQUAL > /*Expression*/ < END_EXPRESSION > | < OPEN_SQUARE_PAREN > /*Expression*/ < CLOSE_SQUARE_PAREN > < EQUAL > /*Expression*/ < END_EXPRESSION > )
+;
 

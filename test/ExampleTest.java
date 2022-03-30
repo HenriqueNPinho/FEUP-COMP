@@ -16,7 +16,7 @@ public class ExampleTest {
     }
     @Test
     public void testFile(){
-        var result = TestUtils.parse(SpecsIo.getResource("fixtures/public/VarDeclarationTest.jmm"));
+        var result = TestUtils.parse(SpecsIo.getResource("fixtures/public/MethodDeclarationTest.jmm"));
         TestUtils.noErrors(result.getReports());
     }
 }
