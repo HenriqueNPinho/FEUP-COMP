@@ -88,7 +88,7 @@ Type :
 ;
 
 ClassDeclaration :
-    < CLASS > < IDENTIFIER > (< EXTENDS > < IDENTIFIER >)? < OPEN_CURLY_PAREN > (VarDeclaration)* (MethodDeclaration)*  < CLOSE_CURLY_PAREN >
+    < CLASS > < IDENTIFIER > (< EXTENDS > < IDENTIFIER >)? < OPEN_CURLY_PAREN > (VarDeclaration)* (MethodDeclaration)* < CLOSE_CURLY_PAREN >
 ;
 
 VarDeclaration :
@@ -96,9 +96,9 @@ VarDeclaration :
 ;
 
 MethodDeclaration:
-    < PUBLIC > (Type < IDENTIFIER > < OPEN_PAREN > (Type < IDENTIFIER > (< COMMA > Type < IDENTIFIER >)* )? < CLOSE_PAREN > < OPEN_CURLY_PAREN > (VarDeclaration)*
-    (Statement)* < RETURN > Expression < END_EXPRESSION > < CLOSE_CURLY_PAREN > | < STATIC > < VOID > < MAIN > < OPEN_PAREN > < STRING > < OPEN_SQUARE_PAREN >
-    < CLOSE_SQUARE_PAREN > < IDENTIFIER > < CLOSE_PAREN > < OPEN_CURLY_PAREN > (VarDeclaration)* (Statement)* < CLOSE_CURLY_PAREN > )
+    < PUBLIC > (Type < IDENTIFIER > < OPEN_PAREN > (Type < IDENTIFIER > (< COMMA > Type < IDENTIFIER >)* )? < CLOSE_PAREN > < OPEN_CURLY_PAREN > (SCAN 2 (VarDeclaration)*
+    (Statement)*) < RETURN > Expression < END_EXPRESSION > < CLOSE_CURLY_PAREN > | < STATIC > < VOID > < MAIN > < OPEN_PAREN > < STRING > < OPEN_SQUARE_PAREN >
+    < CLOSE_SQUARE_PAREN > < IDENTIFIER > < CLOSE_PAREN > < OPEN_CURLY_PAREN > (SCAN 2 (VarDeclaration)* (Statement)*) < CLOSE_CURLY_PAREN > )
 ;
 
 Statement:
