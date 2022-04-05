@@ -121,6 +121,11 @@ public class GrammarTest {
     }
 
     @Test
+    public void testStmtArray() {
+        noErrors("anArray[a];", STATEMENT);
+    } /* not working */
+
+    @Test
     public void testExprTrue() {
         noErrors("true", EXPRESSION);
     }

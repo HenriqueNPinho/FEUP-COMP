@@ -20,7 +20,6 @@ TOKEN :
 	< OPEN_CURLY_PAREN : "{" > |
 	< CLOSE_CURLY_PAREN : "}" > |
 	< COMMA : "," > |
-	< DOUBLE_DOT : ":" > |
 	< DOT : "." > |
 	< END_EXPRESSION : ";" > |
 	< NOT : "!" > |
@@ -54,13 +53,13 @@ Assignment #void:
     (< IDENTIFIER > ({jjtThis.put("name", lastConsumedToken.getImage()); }) #Id < EQUAL > AdditiveExpression) ({jjtThis.put("op", "assign");}) #BinOp(2)
 ;
 
-AdditiveExpression :
-	MultiplicativeExpression
-	(
-		(< PLUS > | < MINUS >)
-		MultiplicativeExpression
-	)?
-;
+AdditiveExpression #void :
+    MultiplicativeExpression
+    (
+        (< PLUS > MultiplicativeExpression { jjtThis.put("op", "ADD"); }) #BinOp(2) |
+        (< MINUS > MultiplicativeExpression { jjtThis.put("op", "SUB"); }) #BinOp(2)
+    )?
+ ;
 
 MultiplicativeExpression :
 	Factor
@@ -89,6 +88,7 @@ ImportDeclaration :
 Type :
     < INT > (< OPEN_SQUARE_PAREN >  < CLOSE_SQUARE_PAREN >)? |
     < BOOLEAN > |
+    < STRING > |
     < IDENTIFIER >
 ;
 
@@ -110,22 +110,23 @@ Statement:
     < OPEN_CURLY_PAREN > (Statement)* < CLOSE_CURLY_PAREN > |
     < IF > < OPEN_PAREN > Expression < CLOSE_PAREN > Statement < ELSE > Statement |
     < WHILE > < OPEN_PAREN > Expression < CLOSE_PAREN > Statement |
-    (SCAN 2 Expression < END_EXPRESSION > |
-    < IDENTIFIER > ( < EQUAL > Expression < END_EXPRESSION > | < OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN > < EQUAL > Expression < END_EXPRESSION > ))
+    (SCAN 2 <IDENTIFIER>  <EQUAL> Expression <END_EXPRESSION> |
+    (SCAN 2 <IDENTIFIER> <OPEN_SQUARE_PAREN> Expression <CLOSE_SQUARE_PAREN> <EQUAL> Expression <END_EXPRESSION> |
+    Expression <END_EXPRESSION>))
 ;
 
 ExpressionFirst:
-    < INTEGER > | < FALSE > | < TRUE > | < IDENTIFIER > | < THIS > | < NEW > | < NOT > | < OPEN_PAREN >
+    < INTEGER > | < FALSE > | < TRUE > | < IDENTIFIER > | < THIS > |
+    < NEW > ( < INT > < OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN > | < IDENTIFIER > < OPEN_PAREN > < CLOSE_PAREN > ) |
+    < NOT > Expression |
+    < OPEN_PAREN > Expression < CLOSE_PAREN >
 ;
 
 Expression:
     ExpressionFirst (
                       ( < AND > | < LOWER_THAN > | < PLUS > | < MINUS > | < TIMES > | < DIVIDE >) Expression |
                       < OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN > |
-                      < DOT > (< LENGTH > | < IDENTIFIER > < OPEN_PAREN > ( Expression (< COMMA > Expression )* )? < CLOSE_PAREN > ) |
-                      < INT > < OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN > |
-                      (SCAN 2 < IDENTIFIER > < OPEN_PAREN > < CLOSE_PAREN > |
-                      Expression ( < CLOSE_PAREN > )?)
+                      < DOT > ( < LENGTH > | < IDENTIFIER > < OPEN_PAREN > ( Expression (< COMMA > Expression )* )? < CLOSE_PAREN > )
                     )*
 ;
 
