@@ -47,7 +47,7 @@ TOKEN :
 	< IDENTIFIER : (["A" - "Z", "a" - "z"] | "_" | "$") ((["A" - "Z", "a" - "z", "0" - "9"] | "_" | "$"))* >
 ;
 
-Start : Program <EOF> ;
+Start #void: Program <EOF> ;
 
 Assignment #void:
     (< IDENTIFIER > ({jjtThis.put("name", lastConsumedToken.getImage()); }) #Id < EQUAL > AdditiveExpression) ({jjtThis.put("op", "assign");}) #BinOp(2)
@@ -69,8 +69,8 @@ MultiplicativeExpression :
 	)?
 ;
 
-Factor :
-	< INTEGER > |
+Factor #void:
+	< INTEGER > #IntegerLiteral |
 	< MINUS> Factor |
 	< OPEN_PAREN > AdditiveExpression < CLOSE_PAREN >
 ;
@@ -85,15 +85,16 @@ ImportDeclaration :
     )*
 ;
 
-Type :
+Type #boid:
     < INT > (< OPEN_SQUARE_PAREN >  < CLOSE_SQUARE_PAREN >)? |
-    < BOOLEAN > |
-    < STRING > |
+    < BOOLEAN > #bool|
+    < STRING > #str|
     < IDENTIFIER >
 ;
 
+
 ClassDeclaration :
-    < CLASS > < IDENTIFIER > (< EXTENDS > < IDENTIFIER >)? < OPEN_CURLY_PAREN > (VarDeclaration)* (MethodDeclaration)* < CLOSE_CURLY_PAREN >
+    < CLASS > < IDENTIFIER > ({jjtThis.put("name", lastConsumedToken.getImage());}) #Id (< EXTENDS > < IDENTIFIER > ({jjtThis.put("name", lastConsumedToken.getImage());}) #Id)? < OPEN_CURLY_PAREN > (VarDeclaration)* (MethodDeclaration)* < CLOSE_CURLY_PAREN >
 ;
 
 VarDeclaration :
@@ -101,9 +102,9 @@ VarDeclaration :
 ;
 
 MethodDeclaration:
-    < PUBLIC > (Type < IDENTIFIER > < OPEN_PAREN > (Type < IDENTIFIER > (< COMMA > Type < IDENTIFIER >)* )? < CLOSE_PAREN > < OPEN_CURLY_PAREN > (SCAN 2 (VarDeclaration)*
+    < PUBLIC > (Type < IDENTIFIER > < OPEN_PAREN > (Type < IDENTIFIER > (< COMMA > Type < IDENTIFIER >)* )? < CLOSE_PAREN > < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)*
     (Statement)*) < RETURN > Expression < END_EXPRESSION > < CLOSE_CURLY_PAREN > | < STATIC > < VOID > < MAIN > < OPEN_PAREN > < STRING > < OPEN_SQUARE_PAREN >
-    < CLOSE_SQUARE_PAREN > < IDENTIFIER > < CLOSE_PAREN > < OPEN_CURLY_PAREN > (SCAN 2 (VarDeclaration)* (Statement)*) < CLOSE_CURLY_PAREN > )
+    < CLOSE_SQUARE_PAREN > < IDENTIFIER > < CLOSE_PAREN > < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)* (Statement)*) < CLOSE_CURLY_PAREN > )
 ;
 
 Statement:
@@ -155,41 +156,6 @@ INJECT BaseNode :
             throw new RuntimeException("Node " + child + " is not a Node.");
         }
 
-    }
-}
-
-// Injections for the implementation of JmmNode
-// Since this is injected into Token, it affects only terminals
-INJECT Token :
-		import pt.up.fe.comp.jmm.ast.JmmNode;
-		import pt.up.fe.comp.jmm.ast.AJmmNode;
-		import pt.up.fe.specs.util.SpecsCollections;
-		extends AJmmNode
-{
-    @Override
-    public List<JmmNode> getChildren() {
-
-        return SpecsCollections.cast(children(), JmmNode.class);
-    }
-
-    @Override
-    public void add(JmmNode child, int index) {
-
-		throw new RuntimeException("Cannot add child nodes to a Token.");
-    }
-
-    @Override
-    public List<String> getAttributes() {
-        return SpecsCollections.concat("image", super.getAttributes());
-    }
-
-    @Override
-    public String get(String attribute) {
-		if(attribute.equals("image")) {
-			return getImage();
-		}
-
-        return super.get(attribute);
     }
 }
 
