@@ -52,7 +52,7 @@ Start #void:
 ;
 
 Program #void:
-    ImportDeclaration < EOF >
+   Expression < EOF >
 ;
 
 ImportDeclaration:
@@ -92,20 +92,20 @@ Statement #void:
     Expression < END_EXPRESSION >))
 ;
 
-ExpressionFirst:
-    < INTEGER > | < FALSE > | < TRUE > | < IDENTIFIER > | < THIS > |
+ExpressionFirst #void:
+    IntLiteral | < FALSE > | < TRUE > | < IDENTIFIER > | < THIS > |
     < NEW > ( < INT > < OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN > | < IDENTIFIER > < OPEN_PAREN > < CLOSE_PAREN > ) |
     < OPEN_PAREN > Expression < CLOSE_PAREN >
 ;
 
-ExpressionTerminal:
+ExpressionTerminal #void:
     ExpressionFirst (
                     (< OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN >) |
-                    < DOT > (< LENGTH > | < IDENTIFIER > {jjtThis.put("name", lastConsumedToken.getImage()); } < OPEN_PAREN > (Expression (< COMMA > Expression)*)? < CLOSE_PAREN >)
+                    < DOT > (< LENGTH > | < IDENTIFIER > < OPEN_PAREN > (Expression (< COMMA > Expression)*)? < CLOSE_PAREN >)
                     )*
 ;
 
-Expression:
+Expression #void :
     AndExpression
 ;
 
@@ -120,7 +120,7 @@ LowerExpression #void:
 AdditiveExpression #void:
     MultiplicativeExpression
     (
-        (< PLUS > MultiplicativeExpression) ({ jjtThis.put("op", "add"); }) #BinOp(2) |
+        (< PLUS >  MultiplicativeExpression) ({ jjtThis.put("op", "add"); }) #BinOp(2) |
         (< MINUS > MultiplicativeExpression) ({ jjtThis.put("op", "sub"); }) #BinOp(2)
     )*
  ;
@@ -142,6 +142,9 @@ NotExpression #void:
     < NOT > Expression
 ;
 
+IntLiteral:
+    < INTEGER > { jjtThis.put("value", lastConsumedToken.getImage()); }
+;
 // Injections for the implementation of JmmNode
 // Since this is injected into BaseNode, it affects only non-terminals
 INJECT BaseNode :
