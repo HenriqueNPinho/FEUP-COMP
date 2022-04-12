@@ -52,12 +52,12 @@ Start #void:
 ;
 
 Program #void:
-    ImportDeclaration ClassDeclaration < EOF >
+    ImportDeclaration < EOF >
 ;
 
 ImportDeclaration:
     (
-        < IMPORT > < IDENTIFIER > { jjtThis.put("name", lastConsumedToken.getImage()); } (< DOT > < IDENTIFIER > { jjtThis.put("name", lastConsumedToken.getImage()); })* < END_EXPRESSION >
+        < IMPORT > < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) (< DOT > < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) )* < END_EXPRESSION >
     )*
 ;
 
