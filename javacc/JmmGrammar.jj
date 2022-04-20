@@ -69,15 +69,15 @@ Type #void:
 ;
 
 
-ClassDeclaration #void:
-    < CLASS > < IDENTIFIER > (< EXTENDS > < IDENTIFIER >)? < OPEN_CURLY_PAREN > (VarDeclaration)* (MethodDeclaration)* < CLOSE_CURLY_PAREN >
+ClassDeclaration:
+    < CLASS > < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) (< EXTENDS > < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })? < OPEN_CURLY_PAREN > (VarDeclaration)* (MethodDeclaration)* < CLOSE_CURLY_PAREN >
 ;
 
 VarDeclaration:
-    Type < IDENTIFIER > < END_EXPRESSION >
+    Type < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })  < END_EXPRESSION >
 ;
 
-MethodDeclaration #void:
+MethodDeclaration:
     < PUBLIC > (Type < IDENTIFIER > < OPEN_PAREN > (Type < IDENTIFIER > (< COMMA > Type < IDENTIFIER >)*)? < CLOSE_PAREN > < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)*
     (Statement)*) < RETURN > Expression < END_EXPRESSION > < CLOSE_CURLY_PAREN > | < STATIC > < VOID > < MAIN > < OPEN_PAREN > < STRING > < OPEN_SQUARE_PAREN >
     < CLOSE_SQUARE_PAREN > < IDENTIFIER > < CLOSE_PAREN > < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)* (Statement)*) < CLOSE_CURLY_PAREN >)
