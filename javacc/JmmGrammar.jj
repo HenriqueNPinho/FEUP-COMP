@@ -52,7 +52,7 @@ Start #void:
 ;
 
 Program #void:
- Expression < EOF >
+ Statement < EOF >
 ;
 
 ImportDeclaration :
@@ -117,17 +117,31 @@ ParamDeclaration #Parameter:
  ( SCAN 2 (TypeArray {jjtThis.put("type", "integer array"); }) | (Type { jjtThis.put("type", lastConsumedToken.getImage()); })) < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })
  ;
 
-Statement :
-    < OPEN_CURLY_PAREN > (Statement)* < CLOSE_CURLY_PAREN > |
-    < IF > < OPEN_PAREN > Expression < CLOSE_PAREN > Statement < ELSE > Statement |
-    < WHILE > < OPEN_PAREN > Expression < CLOSE_PAREN > Statement |
+Statement #void:
+    < OPEN_CURLY_PAREN > (Statement)*  < CLOSE_CURLY_PAREN >  |
+    IfStatement |
+    WhileStatement|
     (SCAN 2 < IDENTIFIER > < EQUAL > Expression < END_EXPRESSION > |
     (SCAN 2 < IDENTIFIER > < OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN > < EQUAL > Expression < END_EXPRESSION > |
-    Expression < END_EXPRESSION >))
+    (Expression {jjtThis.put("value", lastConsumedToken.getImage());}) #Statement < END_EXPRESSION > ) )
 ;
 
+Condition #void:
+ (Expression {jjtThis.put("value", lastConsumedToken.getImage());}) #Condition
+;
+
+
+WhileStatement:
+     < WHILE > < OPEN_PAREN > Condition #While < CLOSE_PAREN > Statement #Do
+;
+
+IfStatement :
+     < IF >  < OPEN_PAREN > Condition #If < CLOSE_PAREN >   Statement #Then  < ELSE > Statement #Else
+;
+
+
 ExpressionFirst #void :
-     IntLiteral | (< FALSE > {jjtThis.put("value", lastConsumedToken.getImage()); }) #Bool | (< TRUE >  {jjtThis.put("value", lastConsumedToken.getImage()); }) #Bool | ( < IDENTIFIER > {jjtThis.put("name", lastConsumedToken.getImage()); }) #Id  |( < THIS > {jjtThis.put("name", lastConsumedToken.getImage()); }) #Id |
+     IntLiteral | < FALSE >  | < TRUE >   | < IDENTIFIER >  | < THIS >  |
     < NEW > ( < INT > < OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN > | < IDENTIFIER > < OPEN_PAREN > < CLOSE_PAREN > ) |
     < OPEN_PAREN > Expression < CLOSE_PAREN >
 ;
