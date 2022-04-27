@@ -52,7 +52,7 @@ Start #void:
 ;
 
 Program #void:
-    ClassDeclaration < EOF >
+  MethodDeclaration < EOF >
 ;
 
 ImportDeclaration :
@@ -70,13 +70,15 @@ Import:
 ;
 
 Type #void:
-    (SCAN 2 < INT > < OPEN_SQUARE_PAREN > < CLOSE_SQUARE_PAREN > |
-    < INT >   ) |
+    < INT >    |
     < BOOLEAN >|
     < STRING >  |
     < IDENTIFIER >
  ;
 
+TypeArray #void:
+    < INT > < OPEN_SQUARE_PAREN > < CLOSE_SQUARE_PAREN >
+;
 ClassDeclaration:
     < CLASS > ClassName (Extends)? < OPEN_CURLY_PAREN > (VarDeclaration)? (MethodDeclaration)* < CLOSE_CURLY_PAREN >
 ;
@@ -90,18 +92,34 @@ Extends:
 ;
 
 
-VarDeclaration: //declarar 1x
+VarDeclaration:
   ( VarName   < END_EXPRESSION >)+
 ;
 VarName #Var:
-    (Type { jjtThis.put("type", lastConsumedToken.getImage()); })   < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })
+    ( (SCAN 2 (TypeArray { jjtThis.put("type", "integer array"); }) | (Type { jjtThis.put("type", lastConsumedToken.getImage()); })))  < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })
 ;
 
 MethodDeclaration:
-    < PUBLIC > (Type < IDENTIFIER > < OPEN_PAREN > (Type < IDENTIFIER > (< COMMA > Type < IDENTIFIER >)*)? < CLOSE_PAREN > < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)*
-    (Statement)*) < RETURN > Expression < END_EXPRESSION > < CLOSE_CURLY_PAREN > | < STATIC > < VOID > < MAIN > < OPEN_PAREN > < STRING > < OPEN_SQUARE_PAREN >
-    < CLOSE_SQUARE_PAREN > < IDENTIFIER > < CLOSE_PAREN > < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)* (Statement)*) < CLOSE_CURLY_PAREN >)
+    < PUBLIC > ( GeneralMethods | MainMethod )
 ;
+
+MainMethod #Method:
+    < STATIC > ({ jjtThis.put("static", "yes"); })  < VOID > ({ jjtThis.put("return type", lastConsumedToken.getImage()); })  < MAIN > ({ jjtThis.put("name", lastConsumedToken.getImage()); })  < OPEN_PAREN > < STRING > < OPEN_SQUARE_PAREN >
+    < CLOSE_SQUARE_PAREN > < IDENTIFIER > < CLOSE_PAREN > < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)* (Statement)*) < CLOSE_CURLY_PAREN >
+;
+
+GeneralMethods #Method:
+     (SCAN 2 (TypeArray { jjtThis.put("return type", "integer array"); }) | (Type { jjtThis.put("return type", lastConsumedToken.getImage()); })) < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) < OPEN_PAREN > ( Param)? < CLOSE_PAREN >
+    < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)*  (Statement)*) < RETURN > Expression < END_EXPRESSION > < CLOSE_CURLY_PAREN >
+;
+
+Param #Parameters:
+   ParamDeclaration (< COMMA > ParamDeclaration)*
+;
+
+ParamDeclaration #Parameter:
+ ( SCAN 2 (TypeArray {jjtThis.put("type", "integer array"); }) | (Type { jjtThis.put("type", lastConsumedToken.getImage()); })) < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })
+ ;
 
 Statement #void:
     < OPEN_CURLY_PAREN > (Statement)* < CLOSE_CURLY_PAREN > |
