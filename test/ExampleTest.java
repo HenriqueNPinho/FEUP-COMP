@@ -6,7 +6,7 @@ import pt.up.fe.specs.util.SpecsIo;
 public class ExampleTest {
     @Test
     public void testAccept() {
-        var parserResult = TestUtils.parse("2+3");
+        var parserResult = TestUtils.parse("2+2*3");
         TestUtils.noErrors(parserResult.getReports());
     }
     @Test
