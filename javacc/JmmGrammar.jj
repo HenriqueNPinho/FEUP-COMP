@@ -52,29 +52,49 @@ Start #void:
 ;
 
 Program #void:
-   Expression < EOF >
+    ClassDeclaration < EOF >
 ;
 
-ImportDeclaration:
+ImportDeclaration :
     (
-        < IMPORT > < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) (< DOT > < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) )* < END_EXPRESSION >
+        < IMPORT >  FirstImport  (Import)* < END_EXPRESSION >
     )*
 ;
 
-Type #void:
-    < INT > (< OPEN_SQUARE_PAREN > < CLOSE_SQUARE_PAREN >)? #a_or_i |
-    < BOOLEAN > #bool |
-    < STRING > #str |
-    < IDENTIFIER > #Id
+FirstImport #Import:
+    < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })
 ;
 
+Import:
+    < DOT > < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })
+;
+
+Type #void:
+    (SCAN 2 < INT > < OPEN_SQUARE_PAREN > < CLOSE_SQUARE_PAREN > |
+    < INT >   ) |
+    < BOOLEAN >|
+    < STRING >  |
+    < IDENTIFIER >
+ ;
 
 ClassDeclaration:
-    < CLASS > < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) (< EXTENDS > < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })? < OPEN_CURLY_PAREN > (VarDeclaration)* (MethodDeclaration)* < CLOSE_CURLY_PAREN >
+    < CLASS > ClassName (Extends)? < OPEN_CURLY_PAREN > (VarDeclaration)? (MethodDeclaration)* < CLOSE_CURLY_PAREN >
 ;
 
-VarDeclaration:
-    Type < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })  < END_EXPRESSION >
+ClassName :
+    < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })
+;
+
+Extends:
+    < EXTENDS > < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })
+;
+
+
+VarDeclaration: //declarar 1x
+  ( VarName   < END_EXPRESSION >)+
+;
+VarName #Var:
+    (Type { jjtThis.put("type", lastConsumedToken.getImage()); })   < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })
 ;
 
 MethodDeclaration:

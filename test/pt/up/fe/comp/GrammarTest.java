@@ -56,7 +56,7 @@ public class GrammarTest {
 
     @Test
     public void testClass() {
-        noErrors("class Foo extends Bar {}", CLASS);
+        noErrors("class Foo extends Bar{}", CLASS);
     }
 
     @Test
