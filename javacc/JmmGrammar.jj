@@ -6,53 +6,53 @@ TOKENS_ARE_NODES = false;
 SKIP : " " | "\t" | "\r" | "\n";
 
 TOKEN :
-	< PLUS : "+" > |
-	< MINUS : "-" > |
-	< TIMES : "*" > |
-	< DIVIDE : "/" > |
-	< LOWER_THAN : "<" > |
-	< EQUAL : "=" > |
     < AND : "&&" > |
-	< OPEN_PAREN : "(" > |
-	< CLOSE_PAREN : ")" > |
-	< OPEN_SQUARE_PAREN : "[" > |
-	< CLOSE_SQUARE_PAREN : "]" > |
-	< OPEN_CURLY_PAREN : "{" > |
-	< CLOSE_CURLY_PAREN : "}" > |
-	< COMMA : "," > |
-	< DOT : "." > |
-	< END_EXPRESSION : ";" > |
+    < BOOLEAN : "boolean" > |
+    < CLASS : "class" > |
+    < CLOSE_CURLY_PAREN : "}" > |
+    < CLOSE_PAREN : ")" > |
+    < CLOSE_SQUARE_PAREN : "]" > |
+    < COMMA : "," > |
+    < DIVIDE : "/" > |
+    < DOT : "." > |
+    < END_EXPRESSION : ";" > |
+    < EQUAL : "=" > |
+    < EXTENDS : "extends" > |
+    < ELSE : "else" > |
+    < FALSE : "false" > |
+    < IMPORT : "import" > |
+    < INT : "int" > |
+    < INTEGER : (["0" - "9"])+ > |
+    < IDENTIFIER : (["A" - "Z", "a" - "z"] | "_" | "$") ((["A" - "Z", "a" - "z", "0" - "9"] | "_" | "$"))* >|
+    < IF : "if" > |
+    < LOWER_THAN : "<" > |
+    < LENGTH : "length" > |
+    < MAIN : "main" > |
+	< MINUS : "-" > |
 	< NOT : "!" > |
-	< IMPORT : "import" > |
-	< CLASS : "class" > |
-	< EXTENDS : "extends" > |
-	< BOOLEAN : "boolean" > |
-	< INT : "int" > |
+	< NEW : "new" > |
+    < NULL : "null" > |
+	< OPEN_CURLY_PAREN : "{" > |
+	< OPEN_PAREN : "(" > |
+	< OPEN_SQUARE_PAREN : "[" > |
+	< PLUS : "+" > |
 	< PUBLIC : "public" > |
 	< RETURN : "return" > |
 	< STATIC : "static" > |
-	< VOID : "void" > |
-	< MAIN : "main" > |
 	< STRING : "String" > |
-	< IF : "if" > |
-	< ELSE : "else" > |
-	< WHILE : "while" > |
-	< LENGTH : "length" > |
 	< THIS : "this" > |
-	< NEW : "new" > |
+	< TIMES : "*" > |
 	< TRUE : "true" > |
-	< FALSE : "false" > |
-	< NULL : "null" > |
-	< INTEGER : (["0" - "9"])+ > |
-	< IDENTIFIER : (["A" - "Z", "a" - "z"] | "_" | "$") ((["A" - "Z", "a" - "z", "0" - "9"] | "_" | "$"))* >
+	< VOID : "void" > |
+	< WHILE : "while" >
 ;
-
+//// #class && #method a dar erro
 Start #void:
     Program <EOF>
 ;
 
 Program #void:
- Statement < EOF >
+ Expression < EOF >
 ;
 
 ImportDeclaration :
@@ -83,7 +83,7 @@ ClassDeclaration:
     < CLASS > ClassName  < OPEN_CURLY_PAREN > (VarDeclaration)? (MethodDeclaration)* < CLOSE_CURLY_PAREN >
 ;
 
-ClassName #Classqqq:
+ClassName #ClassD:
     (< IDENTIFIER > { jjtThis.put("name", lastConsumedToken.getImage()); }) (< EXTENDS > (< IDENTIFIER >  {jjtThis.put("extends", lastConsumedToken.getImage()); }) )?
 ;
 
@@ -99,12 +99,12 @@ MethodDeclaration:
     < PUBLIC > ( GeneralMethods | MainMethod )
 ;
 
-MainMethod #Metho:
+MainMethod #Methodd:
     < STATIC > ({ jjtThis.put("static", "yes"); })  < VOID > ({ jjtThis.put("return type", lastConsumedToken.getImage()); })  < MAIN > ({ jjtThis.put("name", lastConsumedToken.getImage()); })  < OPEN_PAREN > < STRING > < OPEN_SQUARE_PAREN >
     < CLOSE_SQUARE_PAREN > < IDENTIFIER > < CLOSE_PAREN > < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)* (Statement)*) < CLOSE_CURLY_PAREN >
 ;
 
-GeneralMethods #Metho:
+GeneralMethods #Methodd:
      (SCAN 2 (TypeArray { jjtThis.put("return type", "integer array"); }) | (Type { jjtThis.put("return type", lastConsumedToken.getImage()); })) < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) < OPEN_PAREN > ( Param)? < CLOSE_PAREN >
     < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)*  (Statement)*) < RETURN > Expression < END_EXPRESSION > < CLOSE_CURLY_PAREN >
 ;
@@ -118,39 +118,21 @@ ParamDeclaration #Parameter:
  ;
 
 Statement #void:
-    < OPEN_CURLY_PAREN > (Statement)*  < CLOSE_CURLY_PAREN >  |
+    < OPEN_CURLY_PAREN > (Statement)+ #Statement  < CLOSE_CURLY_PAREN >  |
     IfStatement |
     WhileStatement|
-    (SCAN 2 < IDENTIFIER > < EQUAL > Expression < END_EXPRESSION > |
-    (SCAN 2 < IDENTIFIER > < OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN > < EQUAL > Expression < END_EXPRESSION > |
-    (Expression {jjtThis.put("value", lastConsumedToken.getImage());}) #Statement < END_EXPRESSION > ) )
-;
-
-Condition #void:
- (Expression {jjtThis.put("value", lastConsumedToken.getImage());}) #Condition
+    (SCAN 2 (< IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) #Id < EQUAL > (Expression {jjtThis.put("value", lastConsumedToken.getImage());}) #Id  < END_EXPRESSION >)  ({jjtThis.put("op", "assign");})  #BinOp(2)|
+    (SCAN 2 ((< IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) < OPEN_SQUARE_PAREN > (Expression {jjtThis.put("index", lastConsumedToken.getImage());}) ) #Array< CLOSE_SQUARE_PAREN >   < EQUAL > (Expression {jjtThis.put("value", lastConsumedToken.getImage());}) #Id  < END_EXPRESSION >) ({jjtThis.put("op", "assign");})  #BinOp(2)|
+     Expression  < END_EXPRESSION > ) )
 ;
 
 
 WhileStatement:
-     < WHILE > < OPEN_PAREN > Condition #While < CLOSE_PAREN > Statement #Do
+     < WHILE > < OPEN_PAREN > Expression  #While < CLOSE_PAREN > Statement #Do
 ;
 
 IfStatement :
-     < IF >  < OPEN_PAREN > Condition #If < CLOSE_PAREN >   Statement #Then  < ELSE > Statement #Else
-;
-
-
-ExpressionFirst #void :
-     IntLiteral | < FALSE >  | < TRUE >   | < IDENTIFIER >  | < THIS >  |
-    < NEW > ( < INT > < OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN > | < IDENTIFIER > < OPEN_PAREN > < CLOSE_PAREN > ) |
-    < OPEN_PAREN > Expression < CLOSE_PAREN >
-;
-
-ExpressionTerminal#void :
-    ExpressionFirst (
-                    (< OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN >) |
-                    < DOT > (< LENGTH > | < IDENTIFIER > < OPEN_PAREN > (Expression (< COMMA > Expression)*)? < CLOSE_PAREN >)
-                    )*
+     < IF >  < OPEN_PAREN >Expression #If < CLOSE_PAREN >   Statement #Then  < ELSE > Statement #Else
 ;
 
 Expression  #void:
@@ -188,6 +170,19 @@ CreationExpression #void :
 NotExpression #void:
     ExpressionTerminal |
     < NOT > Expression
+;
+
+ExpressionTerminal#void :
+    ExpressionFirst (
+                    (< OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN >) |
+                    < DOT > (< LENGTH > | < IDENTIFIER > < OPEN_PAREN > (Expression (< COMMA > Expression)*)? < CLOSE_PAREN >)
+                    )*
+;
+
+ExpressionFirst #void :
+     IntLiteral | < FALSE > ({ jjtThis.put("value", lastConsumedToken.getImage()); }) #Bool  | < TRUE >  #Bool | < IDENTIFIER > ({ jjtThis.put("value", lastConsumedToken.getImage()); }) #Id  | < THIS >  ({ jjtThis.put("value", lastConsumedToken.getImage()); }) #Id|
+    < NEW > ( < INT > < OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN > | (< IDENTIFIER > < OPEN_PAREN > < CLOSE_PAREN > ) |
+    < OPEN_PAREN > Expression < CLOSE_PAREN >
 ;
 
 IntLiteral :

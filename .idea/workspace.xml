@@ -88,8 +88,8 @@
       <recent name="$PROJECT_DIR$/test/fixtures/public" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.GrammarTest.testStmtWhile">
-    <configuration name="GrammarTest.testStmtAssign" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+  <component name="RunManager" selected="Gradle.GrammarTest.testExprMemberCall">
+    <configuration name="GrammarTest.testExprId" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -102,7 +102,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;pt.up.fe.comp.GrammarTest.testStmtAssign&quot;" />
+            <option value="&quot;pt.up.fe.comp.GrammarTest.testExprId&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -112,7 +112,7 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="GrammarTest.testStmtIfElse" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="GrammarTest.testExprIntLiteral" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -125,7 +125,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;pt.up.fe.comp.GrammarTest.testStmtIfElse&quot;" />
+            <option value="&quot;pt.up.fe.comp.GrammarTest.testExprIntLiteral&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -135,7 +135,7 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="GrammarTest.testStmtScope" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="GrammarTest.testExprMemberCall" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -148,7 +148,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;pt.up.fe.comp.GrammarTest.testStmtScope&quot;" />
+            <option value="&quot;pt.up.fe.comp.GrammarTest.testExprMemberCall&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -158,7 +158,7 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="GrammarTest.testStmtWhile" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="GrammarTest.testExprParen" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -171,7 +171,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;pt.up.fe.comp.GrammarTest.testStmtWhile&quot;" />
+            <option value="&quot;pt.up.fe.comp.GrammarTest.testExprParen&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -181,7 +181,7 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="GrammarTest.testStmtWhileWithoutBrackets" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="GrammarTest.testExprThis" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -194,7 +194,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;pt.up.fe.comp.GrammarTest.testStmtWhileWithoutBrackets&quot;" />
+            <option value="&quot;pt.up.fe.comp.GrammarTest.testExprThis&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -206,11 +206,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.GrammarTest.testStmtWhile" />
-        <item itemvalue="Gradle.GrammarTest.testStmtScope" />
-        <item itemvalue="Gradle.GrammarTest.testStmtWhileWithoutBrackets" />
-        <item itemvalue="Gradle.GrammarTest.testStmtAssign" />
-        <item itemvalue="Gradle.GrammarTest.testStmtIfElse" />
+        <item itemvalue="Gradle.GrammarTest.testExprMemberCall" />
+        <item itemvalue="Gradle.GrammarTest.testExprParen" />
+        <item itemvalue="Gradle.GrammarTest.testExprIntLiteral" />
+        <item itemvalue="Gradle.GrammarTest.testExprId" />
+        <item itemvalue="Gradle.GrammarTest.testExprThis" />
       </list>
     </recent_temporary>
   </component>
