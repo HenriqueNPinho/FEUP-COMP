@@ -44,6 +44,14 @@ public class SimpleParser implements JmmParser {
 
             return new JmmParserResult((JmmNode) root, Collections.emptyList(), config);
 
+        } catch (ParseException e) {
+            // ... test if 'e' is null and handle 'ex' in a more generic way
+            Token t = e.getToken();
+            int line = t.getBeginLine();
+            int column = t.getBeginColumn();
+            String message = "Exception during parsing: " + t + " at line " + line + " and column " + column;
+            Report report = Report.newError(Stage.SYNTATIC, line, column, message, e);
+            return JmmParserResult.newError(report);
         } catch (Exception e) {
             return JmmParserResult.newError(Report.newError(Stage.SYNTATIC, -1, -1, "Exception during parsing", e));
         }
