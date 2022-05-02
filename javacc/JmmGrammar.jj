@@ -48,7 +48,7 @@ TOKEN :
 ;
 //// #class && #method a dar erro
 Start #void:
-    Expression <EOF>
+    Program <EOF>
 ;
 
 Program #void:
@@ -88,12 +88,12 @@ ClassName #Classa:
     (< IDENTIFIER > { jjtThis.put("name", lastConsumedToken.getImage()); }) (< EXTENDS > (< IDENTIFIER >  {jjtThis.put("extends", lastConsumedToken.getImage()); }) )?
 ;
 
-
 VarDeclaration:
-  ( VarName   < END_EXPRESSION >)+
+    (VarName < END_EXPRESSION >)+
 ;
+
 VarName #Var:
-    ( (SCAN 2 (TypeArray { jjtThis.put("type", "integer array"); }) | (Type { jjtThis.put("type", lastConsumedToken.getImage()); })))  < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })
+    SCAN 2 (((SCAN 2 (TypeArray { jjtThis.put("type", "integer array"); }) | (Type { jjtThis.put("type", lastConsumedToken.getImage()); })))  < IDENTIFIER >) ({ jjtThis.put("name", lastConsumedToken.getImage()); })
 ;
 
 MethodDeclaration:
