@@ -5,8 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e0bff920-19fa-4cbd-af10-d5ed972bf4a3" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/javacc/JmmGrammar.jj" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/JmmGrammar.jj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/javacc-full.jar" beforeDir="false" afterPath="$PROJECT_DIR$/libs/javacc-full.jar_" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,34 +75,37 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "last_opened_file_path": "/home/henrique/Desktop/Comp/comp2022-5d",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "configurable.group.tools",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/test/fixtures/public" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.GrammarTest.testExprMemberCall (1)">
-    <configuration name="GrammarTest.testExprId" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;pt.up.fe.comp.GrammarTest.testExprId&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <method v="2" />
+  <component name="RunManager" selected="Gradle.GrammarTest.testExprTrue">
+    <configuration name="MainAnalysis" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.MainAnalysis" />
+      <module name="comp2022-5d.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="pt.up.fe.comp.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
     </configuration>
     <configuration name="GrammarTest.testExprIntLiteral" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
@@ -170,7 +176,7 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="GrammarTest.testExprThis" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="GrammarTest.testExprTrue" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -183,7 +189,7 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;pt.up.fe.comp.GrammarTest.testExprThis&quot;" />
+            <option value="&quot;pt.up.fe.comp.GrammarTest.testExprTrue&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -195,11 +201,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.GrammarTest.testExprTrue" />
+        <item itemvalue="Application.MainAnalysis" />
         <item itemvalue="Gradle.GrammarTest.testExprMemberCall (1)" />
         <item itemvalue="Gradle.GrammarTest.testExprParen" />
         <item itemvalue="Gradle.GrammarTest.testExprIntLiteral" />
-        <item itemvalue="Gradle.GrammarTest.testExprId" />
-        <item itemvalue="Gradle.GrammarTest.testExprThis" />
       </list>
     </recent_temporary>
   </component>
