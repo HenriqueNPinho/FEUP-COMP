@@ -48,7 +48,7 @@ TOKEN :
 ;
 //// #class && #method a dar erro
 Start #void:
-    Expression <EOF>
+    Program <EOF>
 ;
 
 Program #void:
@@ -176,7 +176,7 @@ NotExpression #void:
 ExpressionTerminal #void:
     ExpressionFirst (
                     (< OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN >) #ArrayAccess(2) |
-                    < DOT > (< LENGTH > #LengthOp(1) | (FirstMethodCall (MethodCall)*) #MethodCall(2))
+                    < DOT > (< LENGTH > #LengthOp(1) | (MethodCall Arguments) #MethodCall(3))
                     )*
 ;
 
@@ -186,20 +186,16 @@ ExpressionFirst #void :
     < OPEN_PAREN > Expression < CLOSE_PAREN >
 ;
 
-Arguments #Arguments:
-    Argument (< COMMA > Argument)*
+Arguments:
+    < OPEN_PAREN > (Argument)? (< COMMA > Argument)* < CLOSE_PAREN >
 ;
 
 Argument #void:
     Expression
 ;
 
-FirstMethodCall #MethodCall:
-    < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) < OPEN_PAREN > (Arguments)? < CLOSE_PAREN >
-;
-
-MethodCall:
-    < DOT > < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) < OPEN_PAREN > (Arguments)? < CLOSE_PAREN >
+MethodCall #void:
+    < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) #Id
 ;
 
 IntLiteral :
