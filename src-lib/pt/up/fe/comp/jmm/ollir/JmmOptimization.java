@@ -25,7 +25,19 @@ public interface JmmOptimization {
      * @param semanticsResult
      * @return
      */
-    OllirResult toOllir(JmmSemanticsResult semanticsResult);
+    OllirResult toOllir(JmmSemanticsResult semanticsResult){
+
+        JmmNode node = semanticsResult.getRootNode();
+
+        // Convert the AST to a String eith the OLLIR code
+        String ollirCode = "";
+
+        // Reports from this stage
+        List<Report> reports = new ArrayList<>();
+
+        return new OllirResult(semanticsResult, ollirCode, reports);
+    }
+
 
     /**
      * Step 3 (for CP3): optimize code at the OLLIR level
