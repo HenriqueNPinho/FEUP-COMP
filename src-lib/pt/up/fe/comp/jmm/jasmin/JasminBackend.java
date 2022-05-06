@@ -17,6 +17,32 @@ public interface JasminBackend {
      * @param ollirResult
      * @return
      */
-    JasminResult toJasmin(OllirResult ollirResult);
+    JasminResult toJasmin(OllirResult ollirResult){
+        ClassUnit ollirClass = ollirResult.getOllirClass();
+
+        try {
+
+            // Example of what you can do with the OLLIR class OLLIR TOOLS
+            ollirClass.checkMethodLabels(); 
+            ollirClass.buildCFGs(); // build the CFG of each method
+            ollirClass.outputCFGs();
+            ollirClass.buildVarTables(); // build the table of variables for each method
+            ollirClass.show(); // print to console main information about the input OLLIR
+
+            // Convert the OLLIR to a String containing the equivalent Jasmin code
+            String jasminCode = ""; 
+
+            // Reports from this stage
+            List<Report> reports = new ArrayList<>();
+
+            return new JasminResult(ollirResult, jasminCode, reports);
+
+        } catch (OllirErrorException e) {
+            return new JasminResult(ollirClass.getClassName(), null,
+                    Arrays.asList(Report.newError(Stage.GENERATION, -1, -1, "Exception during Jasmin generation", e)));
+        }
+
+    }
+
 
 }
