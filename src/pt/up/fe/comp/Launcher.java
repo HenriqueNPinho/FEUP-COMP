@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pt.up.fe.comp.jmm.analysis.JmmSemanticsResult;
+import pt.up.fe.comp.jmm.ollir.OllirResult;
 import pt.up.fe.comp.jmm.parser.JmmParserResult;
 import pt.up.fe.specs.util.SpecsIo;
 import pt.up.fe.specs.util.SpecsLogs;
@@ -52,6 +53,15 @@ public class Launcher {
 
         // Check if there are parsing errors
         TestUtils.noErrors(analysisResult.getReports());
+
+        // Instantiate JmmOptimization
+        JmmOptimizer optimizer = new JmmOptimizer();
+
+        // Optimization stage
+        OllirResult ollirResult = optimizer.toOllir(analysisResult);
+
+        // Check if there are parsing errors
+        TestUtils.noErrors(ollirResult.getReports());
 
         // ... add remaining stages
     }
