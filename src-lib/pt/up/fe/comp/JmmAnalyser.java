@@ -9,7 +9,11 @@ import pt.up.fe.comp.jmm.parser.JmmParserResult;
 public class JmmAnalyser implements JmmAnalysis {
     @Override
     public JmmSemanticsResult semanticAnalysis(JmmParserResult parserResult) {
-        SymbolTable symbolTable = null;
+        var symbolTable = new SymbolTableBuilder();
+
+        var symbolTableFiller = new SymbolTableFiller();
+        symbolTableFiller.visit(parserResult.getRootNode(), symbolTable);
+
         return new JmmSemanticsResult(parserResult, symbolTable, Collections.emptyList());
     }
 }

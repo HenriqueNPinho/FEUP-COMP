@@ -1,4 +1,5 @@
 import io.a.b;
+import c;
 
 class Fac {
     public int ComputeFac(int num) {

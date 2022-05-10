@@ -51,23 +51,18 @@ Start #void:
     Program <EOF>
 ;
 
-// should be void, but ClassDeclaration won't show
 Program:
     ImportDeclaration ClassDeclaration < EOF >
 ;
 
-ImportDeclaration:
+ImportDeclaration #void:
     (
-        < IMPORT > FirstImport (Imports)* < END_EXPRESSION >
+        (< IMPORT > FirstImport (< DOT > < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) #Id)* < END_EXPRESSION >) #ImportDeclaration
     )*
 ;
 
-FirstImport #Imports:
-    < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })
-;
-
-Imports:
-    < DOT > < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })
+FirstImport #void:
+    < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) #Id
 ;
 
 Type #void:
@@ -85,7 +80,7 @@ ClassDeclaration:
     < CLASS > ClassName < OPEN_CURLY_PAREN > (VarDeclaration)? (MethodDeclaration)* < CLOSE_CURLY_PAREN >
 ;
 
-ClassName:
+ClassName #Id:
     (< IDENTIFIER > { jjtThis.put("name", lastConsumedToken.getImage()); }) (< EXTENDS > (< IDENTIFIER >  {jjtThis.put("extends", lastConsumedToken.getImage()); }) )?
 ;
 
@@ -97,12 +92,12 @@ VarName #Var:
     SCAN 2 (((SCAN 2 (TypeArray { jjtThis.put("type", "integer array"); }) | (Type { jjtThis.put("type", lastConsumedToken.getImage()); })))  < IDENTIFIER >) ({ jjtThis.put("name", lastConsumedToken.getImage()); })
 ;
 
-MethodDeclaration:
+MethodDeclaration #void:
     < PUBLIC > ( GeneralMethod | MainMethod )
 ;
 
 MainMethod:
-    < STATIC > ({ jjtThis.put("static", "yes"); })  < VOID > ({ jjtThis.put("return type", lastConsumedToken.getImage()); })  < MAIN > ({ jjtThis.put("name", lastConsumedToken.getImage()); })  < OPEN_PAREN > < STRING > < OPEN_SQUARE_PAREN >
+    < STATIC > ({ jjtThis.put("static", "true"); })  < VOID > ({ jjtThis.put("return type", lastConsumedToken.getImage()); })  < MAIN > ({ jjtThis.put("name", lastConsumedToken.getImage()); })  < OPEN_PAREN > < STRING > < OPEN_SQUARE_PAREN >
     < CLOSE_SQUARE_PAREN > < IDENTIFIER > < CLOSE_PAREN > < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)* (Statement)*) < CLOSE_CURLY_PAREN >
 ;
 
