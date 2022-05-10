@@ -13,7 +13,9 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
 
     private Integer importDeclVisit(JmmNode importDecl, SymbolTableBuilder symbolTable) {
         var importString = importDecl.getChildren().stream().map(id -> id.get("name")).collect(Collectors.joining("."));
-        System.out.println("IMPORT: " + importString);
+
+        symbolTable.addImport(importString);
+
         return 0;
     }
 }
