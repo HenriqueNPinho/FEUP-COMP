@@ -38,9 +38,17 @@ public class SymbolTableBuilder implements SymbolTable {
         return className;
     }
 
+    public void setClassName(String newClassName) {
+        this.className = newClassName;
+    }
+
     @Override
     public String getSuper() {
         return superClass;
+    }
+
+    public void setSuper(String newSuperClass) {
+        this.superClass = newSuperClass;
     }
 
     @Override
@@ -53,14 +61,27 @@ public class SymbolTableBuilder implements SymbolTable {
         return methods;
     }
 
+    public void addMethod(String methodString) {
+        methods.add(methodString);
+    }
+
     @Override
     public Type getReturnType(String methodSignature) {
         return methodReturnTypes.get(methodSignature);
     }
 
+    public void addReturnType(String name, Type type) {
+        methodReturnTypes.put(name, type);
+    }
+
     @Override
     public List<Symbol> getParameters(String methodSignature) {
         return methodParams.get(methodSignature);
+        //return methodParams.getOrDefault(methodSignature, new ArrayList<Symbol>());
+    }
+
+    public void addParameters(String method, List<Symbol> symbols) {
+        methodParams.put(method, symbols);
     }
 
     @Override

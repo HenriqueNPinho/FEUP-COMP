@@ -76,6 +76,10 @@ TypeArray #void:
     < INT > < OPEN_SQUARE_PAREN > < CLOSE_SQUARE_PAREN >
 ;
 
+StringArray #void:
+    < STRING > < OPEN_SQUARE_PAREN > < CLOSE_SQUARE_PAREN >
+;
+
 ClassDeclaration:
     < CLASS > ClassName < OPEN_CURLY_PAREN > (VarDeclaration)? (MethodDeclaration)* < CLOSE_CURLY_PAREN >
 ;
@@ -96,12 +100,12 @@ MethodDeclaration #void:
     < PUBLIC > ( GeneralMethod | MainMethod )
 ;
 
-MainMethod:
-    < STATIC > ({ jjtThis.put("static", "true"); })  < VOID > ({ jjtThis.put("return type", lastConsumedToken.getImage()); })  < MAIN > ({ jjtThis.put("name", lastConsumedToken.getImage()); })  < OPEN_PAREN > < STRING > < OPEN_SQUARE_PAREN >
-    < CLOSE_SQUARE_PAREN > < IDENTIFIER > < CLOSE_PAREN > < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)* (Statement)*) < CLOSE_CURLY_PAREN >
+MainMethod #MethodDeclaration:
+    < STATIC > ({ jjtThis.put("static", "true"); })  < VOID > ({ jjtThis.put("return type", lastConsumedToken.getImage()); })  < MAIN > ({ jjtThis.put("name", lastConsumedToken.getImage()); })  < OPEN_PAREN > ParamDeclarationMain  < CLOSE_PAREN >
+    < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)* (Statement)*) < CLOSE_CURLY_PAREN >
 ;
 
-GeneralMethod:
+GeneralMethod #MethodDeclaration:
     (SCAN 2 (TypeArray { jjtThis.put("return type", "integer array"); }) | (Type { jjtThis.put("return type", lastConsumedToken.getImage()); })) < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) < OPEN_PAREN > (Param)? < CLOSE_PAREN >
     < OPEN_CURLY_PAREN > ((SCAN 2 VarDeclaration)*  (Statement)*) < RETURN > Expression #ReturnExp(1) < END_EXPRESSION > < CLOSE_CURLY_PAREN >
 ;
@@ -110,8 +114,12 @@ Param #Parameters:
     ParamDeclaration (< COMMA > ParamDeclaration)*
 ;
 
-ParamDeclaration #Parameter:
-    (SCAN 2 (TypeArray {jjtThis.put("type", "integer array"); }) | (Type { jjtThis.put("type", lastConsumedToken.getImage()); })) < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })
+ParamDeclaration #void:
+    ((SCAN 2 (TypeArray {jjtThis.put("type", "integer array"); }) | (Type { jjtThis.put("type", lastConsumedToken.getImage()); })) < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })) #Id
+;
+
+ParamDeclarationMain #Parameters:
+    ((StringArray {jjtThis.put("type", "string array"); }) < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); })) #Id
 ;
 
 Statement #void:
