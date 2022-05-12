@@ -1,7 +1,9 @@
 import io.a.b;
 import c;
 
-class Fac extends Uni {
+class Fac extends Uni{
+    int number;
+    int anotherNumber;
     public int ComputeFac(int num) {
         int num_aux ;
         if (num < 1)

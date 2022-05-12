@@ -61,6 +61,10 @@ public class SymbolTableBuilder implements SymbolTable {
         return methods;
     }
 
+    public boolean hasMethod(String methodString) {
+        return methods.contains(methodString);
+    }
+
     public void addMethod(String methodString) {
         methods.add(methodString);
     }

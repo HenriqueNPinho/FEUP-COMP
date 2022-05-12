@@ -92,7 +92,7 @@ VarDeclaration:
     (VarName < END_EXPRESSION >)+
 ;
 
-VarName #Var:
+VarName #Id:
     SCAN 2 (((SCAN 2 (TypeArray { jjtThis.put("type", "integer array"); }) | (Type { jjtThis.put("type", lastConsumedToken.getImage()); })))  < IDENTIFIER >) ({ jjtThis.put("name", lastConsumedToken.getImage()); })
 ;
 

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import pt.up.fe.comp.jmm.ast.JmmNode;
+import pt.up.fe.comp.jmm.ast.LineColAnnotator;
 import pt.up.fe.comp.jmm.parser.JmmParser;
 import pt.up.fe.comp.jmm.parser.JmmParserResult;
 import pt.up.fe.comp.jmm.report.Report;
@@ -36,6 +37,8 @@ public class SimpleParser implements JmmParser {
 
             var root = ((JmmNode) parser.rootNode()).sanitize();
             System.out.println(root.toTree());
+
+            // TODO new LineColAnnotator().visit(root);
 
             if (!(root instanceof JmmNode)) {
                 return JmmParserResult.newError(new Report(ReportType.WARNING, Stage.SYNTATIC, -1,
