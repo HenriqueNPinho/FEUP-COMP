@@ -1,4 +1,4 @@
-package pt.up.fe.comp;
+package pt.up.fe.comp.jmm.analysis;
 
 import pt.up.fe.comp.jmm.analysis.table.Symbol;
 import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
@@ -11,6 +11,7 @@ public class SymbolTableBuilder implements SymbolTable {
     private final List<String> imports;
     private String className;
     private String superClass;
+    private final List<Symbol> fields;
     private final List<String> methods;
     private final Map<String, Type> methodReturnTypes;
     private final Map<String, List<Symbol>> methodParams;
@@ -19,6 +20,7 @@ public class SymbolTableBuilder implements SymbolTable {
         this.imports = new ArrayList<>();
         this.className = null;
         this.superClass = null;
+        this.fields =  new ArrayList<>();
         this.methods = new ArrayList<>();
         this.methodReturnTypes = new HashMap<>();
         this.methodParams = new HashMap<>();
@@ -53,7 +55,11 @@ public class SymbolTableBuilder implements SymbolTable {
 
     @Override
     public List<Symbol> getFields() {
-        return Collections.emptyList();
+        return fields;
+    }
+
+    public void addField(Symbol field) {
+        fields.add(field);
     }
 
     @Override
@@ -80,8 +86,7 @@ public class SymbolTableBuilder implements SymbolTable {
 
     @Override
     public List<Symbol> getParameters(String methodSignature) {
-        return methodParams.get(methodSignature);
-        //return methodParams.getOrDefault(methodSignature, new ArrayList<Symbol>());
+        return methodParams.getOrDefault(methodSignature, new ArrayList<Symbol>());
     }
 
     public void addParameters(String method, List<Symbol> symbols) {

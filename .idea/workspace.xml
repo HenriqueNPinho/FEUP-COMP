@@ -5,11 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e0bff920-19fa-4cbd-af10-d5ed972bf4a3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/javacc/JmmGrammar.jj" beforeDir="false" afterPath="$PROJECT_DIR$/javacc/JmmGrammar.jj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/libs/javacc-full.jar" beforeDir="false" afterPath="$PROJECT_DIR$/libs/javacc-full.jar_" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.properties" beforeDir="false" afterPath="$PROJECT_DIR$/config.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-lib/pt/up/fe/comp/JmmAnalyser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src-lib/pt/up/fe/comp/jmm/analysis/JmmAnalyser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-lib/pt/up/fe/comp/SymbolTableBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src-lib/pt/up/fe/comp/jmm/analysis/SymbolTableBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-lib/pt/up/fe/comp/SymbolTableFiller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src-lib/pt/up/fe/comp/jmm/analysis/SymbolTableFiller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/Launcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/Launcher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/CompleteTest.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/CompleteTest.jmm" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/pt/up/fe/comp/AnalysisTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/pt/up/fe/comp/AnalysisTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

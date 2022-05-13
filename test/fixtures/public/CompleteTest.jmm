@@ -4,6 +4,7 @@ import c;
 class Fac extends Uni{
     int number;
     int anotherNumber;
+    int[] numArray;
     public int ComputeFac(int num) {
         int num_aux ;
         if (num < 1)

@@ -1,11 +1,11 @@
-package pt.up.fe.comp;
+package pt.up.fe.comp.jmm.analysis;
 
+import pt.up.fe.comp.jmm.analysis.SymbolTableBuilder;
 import pt.up.fe.comp.jmm.analysis.table.Symbol;
 import pt.up.fe.comp.jmm.analysis.table.Type;
 import pt.up.fe.comp.jmm.ast.JmmNode;
 import pt.up.fe.comp.jmm.ast.PreorderJmmVisitor;
 import pt.up.fe.comp.jmm.report.Report;
-import pt.up.fe.comp.jmm.report.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
 
     private final List<Report> reports;
 
-    SymbolTableFiller() {
+    public SymbolTableFiller() {
         this.reports = new ArrayList<>();
 
         addVisit("ImportDeclaration", this::importDeclVisit);
@@ -38,16 +38,25 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         symbolTable.setClassName(classDecl.getJmmChild(0).get("name"));
         classDecl.getJmmChild(0).getOptional("extends").ifPresent(symbolTable::setSuper);
 
+        var fieldNames = classDecl.getJmmChild(1).getChildren().stream().map(id -> id.get("name")).collect(Collectors.toList());
+        var fieldTypes = classDecl.getJmmChild(1).getChildren().stream().map(id -> id.get("type")).collect(Collectors.toList());
+        List<Symbol> symbols = new ArrayList<>();
+        for (int i = 0; i < fieldNames.size(); ++i) {
+            Type type = new Type(fieldTypes.get(i), fieldTypes.get(i).equals("integer array") || fieldTypes.get(i).equals("string array"));
+            Symbol symbol = new Symbol(type, fieldNames.get(i));
+            symbolTable.addField(symbol);
+        }
+
         return 0;
     }
 
     private Integer MethodDeclVisit(JmmNode methodDecl, SymbolTableBuilder symbolTable) {
         var methodString =  methodDecl.get("name");
 
-        if (symbolTable.hasMethod(methodString)) {
+        /* if (symbolTable.hasMethod(methodString)) {
             reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(methodDecl.get("line")), Integer.parseInt(methodDecl.get("col")), "Found duplicated methods with signature '" + methodString + "'", null));
             return -1;
-        }
+        } */
 
         var returnType = methodDecl.get("return type");
         Type type = new Type(returnType, returnType.equals("integer array"));

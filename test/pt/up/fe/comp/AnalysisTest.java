@@ -8,5 +8,6 @@ public class AnalysisTest {
     public void test() {
         var results = TestUtils.analyse(SpecsIo.getResource("fixtures/public/CompleteTest.jmm"));
         System.out.println("Symbol Table: " + results.getSymbolTable().print());
+        TestUtils.noErrors(results);
     }
 }
