@@ -38,7 +38,7 @@ public class SimpleParser implements JmmParser {
             var root = ((JmmNode) parser.rootNode()).sanitize();
             System.out.println(root.toTree());
 
-            // TODO new LineColAnnotator().visit(root);
+            //new LineColAnnotator().visit(root);
 
             if (!(root instanceof JmmNode)) {
                 return JmmParserResult.newError(new Report(ReportType.WARNING, Stage.SYNTATIC, -1,

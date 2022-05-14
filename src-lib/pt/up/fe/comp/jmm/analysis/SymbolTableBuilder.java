@@ -15,6 +15,7 @@ public class SymbolTableBuilder implements SymbolTable {
     private final List<String> methods;
     private final Map<String, Type> methodReturnTypes;
     private final Map<String, List<Symbol>> methodParams;
+    private final Map<String, List<Symbol>> localVariables;
 
     public SymbolTableBuilder() {
         this.imports = new ArrayList<>();
@@ -24,6 +25,7 @@ public class SymbolTableBuilder implements SymbolTable {
         this.methods = new ArrayList<>();
         this.methodReturnTypes = new HashMap<>();
         this.methodParams = new HashMap<>();
+        this.localVariables = new HashMap<>();
     }
 
     @Override
@@ -86,7 +88,7 @@ public class SymbolTableBuilder implements SymbolTable {
 
     @Override
     public List<Symbol> getParameters(String methodSignature) {
-        return methodParams.getOrDefault(methodSignature, new ArrayList<Symbol>());
+        return methodParams.getOrDefault(methodSignature, new ArrayList<>());
     }
 
     public void addParameters(String method, List<Symbol> symbols) {
@@ -95,6 +97,20 @@ public class SymbolTableBuilder implements SymbolTable {
 
     @Override
     public List<Symbol> getLocalVariables(String methodSignature) {
-        return Collections.emptyList();
+        return localVariables.getOrDefault(methodSignature, new ArrayList<>());
+    }
+
+    public void addLocalVariables(String method, List<Symbol> variables) {
+        localVariables.put(method, variables);
+    }
+
+    public boolean methodHasVar(String methodString, String varName) {
+        List<Symbol> locarVars = localVariables.get(methodString);
+        for (var symbol : locarVars) {
+            if (symbol.getName().equals(varName)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

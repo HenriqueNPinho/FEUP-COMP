@@ -7,6 +7,7 @@ class Fac extends Uni{
     int[] numArray;
     public int ComputeFac(int num) {
         int num_aux ;
+        String word;
         if (num < 1)
             num_aux= 1;
         else
