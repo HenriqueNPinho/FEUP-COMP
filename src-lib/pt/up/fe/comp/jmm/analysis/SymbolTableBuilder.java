@@ -103,14 +103,4 @@ public class SymbolTableBuilder implements SymbolTable {
     public void addLocalVariables(String method, List<Symbol> variables) {
         localVariables.put(method, variables);
     }
-
-    public boolean methodHasVar(String methodString, String varName) {
-        List<Symbol> locarVars = localVariables.get(methodString);
-        for (var symbol : locarVars) {
-            if (symbol.getName().equals(varName)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
