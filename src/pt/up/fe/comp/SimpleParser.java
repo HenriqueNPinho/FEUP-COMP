@@ -35,10 +35,9 @@ public class SimpleParser implements JmmParser {
             JmmGrammarParser parser = new JmmGrammarParser(SpecsIo.toInputStream(jmmCode));
             parser.Start();
 
-            var root = ((JmmNode) parser.rootNode()).sanitize();
-            System.out.println(root.toTree());
-
-            //new LineColAnnotator().visit(root);
+            var root = ((JmmNode) parser.rootNode());
+            new LineColAnnotator().visit(root);
+            System.out.println(root.sanitize().toTree());
 
             if (!(root instanceof JmmNode)) {
                 return JmmParserResult.newError(new Report(ReportType.WARNING, Stage.SYNTATIC, -1,

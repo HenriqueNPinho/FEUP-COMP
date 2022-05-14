@@ -7,6 +7,7 @@ import java.util.Map;
 
 import pt.up.fe.comp.jmm.analysis.JmmAnalyser;
 import pt.up.fe.comp.jmm.analysis.JmmSemanticsResult;
+import pt.up.fe.comp.jmm.ollir.JmmOptimizer;
 import pt.up.fe.comp.jmm.ollir.OllirResult;
 import pt.up.fe.comp.jmm.parser.JmmParserResult;
 import pt.up.fe.specs.util.SpecsIo;
@@ -59,10 +60,10 @@ public class Launcher {
         JmmOptimizer optimizer = new JmmOptimizer();
 
         // Optimization stage
-        OllirResult ollirResult = optimizer.toOllir(analysisResult);
+        var optimizationResult = optimizer.optimize(analysisResult);
 
         // Check if there are parsing errors
-        TestUtils.noErrors(ollirResult.getReports());
+        TestUtils.noErrors(optimizationResult);
 
         // ... add remaining stages
     }
