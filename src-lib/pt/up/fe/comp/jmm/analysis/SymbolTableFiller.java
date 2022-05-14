@@ -39,13 +39,15 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         symbolTable.setClassName(classDecl.getJmmChild(0).get("name"));
         classDecl.getJmmChild(0).getOptional("extends").ifPresent(symbolTable::setSuper);
 
-        var fieldNames = classDecl.getJmmChild(1).getChildren().stream().map(id -> id.get("name")).collect(Collectors.toList());
-        var fieldTypes = classDecl.getJmmChild(1).getChildren().stream().map(id -> id.get("type")).collect(Collectors.toList());
-        List<Symbol> symbols = new ArrayList<>();
-        for (int i = 0; i < fieldNames.size(); ++i) {
-            Type type = new Type(fieldTypes.get(i), fieldTypes.get(i).equals("integer array") || fieldTypes.get(i).equals("string array"));
-            Symbol symbol = new Symbol(type, fieldNames.get(i));
-            symbolTable.addField(symbol);
+        if (classDecl.getJmmChild(1).getKind().equals("VarDeclaration")) {
+            var fieldNames = classDecl.getJmmChild(1).getChildren().stream().map(id -> id.get("name")).collect(Collectors.toList());
+            var fieldTypes = classDecl.getJmmChild(1).getChildren().stream().map(id -> id.get("type")).collect(Collectors.toList());
+            List<Symbol> symbols = new ArrayList<>();
+            for (int i = 0; i < fieldNames.size(); ++i) {
+                Type type = new Type(fieldTypes.get(i), fieldTypes.get(i).equals("integer array") || fieldTypes.get(i).equals("string array"));
+                Symbol symbol = new Symbol(type, fieldNames.get(i));
+                symbolTable.addField(symbol);
+            }
         }
 
         return 0;
