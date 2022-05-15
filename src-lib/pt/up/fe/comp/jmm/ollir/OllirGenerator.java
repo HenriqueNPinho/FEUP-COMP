@@ -83,27 +83,4 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
         return 0;
     }
-
-        private String getOllirType(Type type) {
-        String name = type.getName();
-
-        String ollirType;
-
-        switch (name) {
-            case "int":
-                ollirType = "i32";
-                break;
-            case "void":
-                ollirType = "V";
-                break;
-            case "boolean":
-                ollirType = "bool";
-                break;
-            default:
-                ollirType = name;
-                break;
-        }
-
-        return (type.isArray() ? "array." : "") + ollirType;
-    }
 }
