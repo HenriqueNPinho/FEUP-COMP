@@ -5,6 +5,7 @@ class Fac extends Uni {
     int number;
     int anotherNumber;
     int[] numArray;
+    boolean isHappy;
     public int ComputeFac(int num) {
         int num_aux ;
         String word;

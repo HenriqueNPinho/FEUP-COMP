@@ -17,6 +17,8 @@ import org.specs.comp.ollir.ClassUnit;
 import org.specs.comp.ollir.parser.OllirParser;
 import org.specs.comp.ollir.parser.ParseException;
 
+import pt.up.fe.comp.jmm.analysis.table.Symbol;
+import pt.up.fe.comp.jmm.analysis.table.Type;
 import pt.up.fe.specs.util.SpecsIo;
 
 public class OllirUtils {
@@ -46,4 +48,36 @@ public class OllirUtils {
 
     }
 
+    public static String getCode(Symbol symbol) {
+        return symbol.getName() + "." + getCode(symbol.getType());
+    }
+
+    public static String getCode(Type type) {
+        StringBuilder code = new StringBuilder();
+
+        if (type.isArray()) {
+            code.append("array.");
+        }
+
+        code.append(getOllirType(type.getName()));
+
+        return code.toString();
+    }
+
+    public static String getOllirType(String jmmType) {
+        switch (jmmType) {
+            case "void":
+                return "V";
+            case "integer array":
+            case "int":
+                return "i32";
+            case "string array":
+            case "string":
+                return "String";
+            case "boolean":
+                return "bool";
+            default:
+                return jmmType;
+        }
+    }
 }

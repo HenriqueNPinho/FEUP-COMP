@@ -4,7 +4,8 @@ import c;
 public Fac extends Uni {
     .field number.i32;
     .field anotherNumber.i32;
-    .field numArray.array.int;
+    .field numArray.array.i32;
+    .field isHappy.bool;
     .method public compFac(num.i32).i32 {
         if ($1.num.i32 >=.bool 1.i32) goto else;
             num_aux.i32 :=.i32 1.i32;
