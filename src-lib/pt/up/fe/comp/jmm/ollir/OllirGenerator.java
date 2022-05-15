@@ -1,6 +1,7 @@
 package pt.up.fe.comp.jmm.ollir;
 
 import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
+import pt.up.fe.comp.jmm.analysis.table.Type;
 import pt.up.fe.comp.jmm.ast.AJmmVisitor;
 import pt.up.fe.comp.jmm.ast.JmmNode;
 
@@ -81,5 +82,28 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
         code.append("}\n");
 
         return 0;
+    }
+
+        private String getOllirType(Type type) {
+        String name = type.getName();
+
+        String ollirType;
+
+        switch (name) {
+            case "int":
+                ollirType = "i32";
+                break;
+            case "void":
+                ollirType = "V";
+                break;
+            case "boolean":
+                ollirType = "bool";
+                break;
+            default:
+                ollirType = name;
+                break;
+        }
+
+        return (type.isArray() ? "array." : "") + ollirType;
     }
 }
