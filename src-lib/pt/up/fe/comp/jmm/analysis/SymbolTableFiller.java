@@ -25,7 +25,8 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         addVisit("VarDeclaration", this::VarDeclVisit);
         addVisit("ReturnExp", this::returnExpVisit);
         addVisit("BinOp", this::binOpVisit);
-        //addVisit("MethodCall", this::methodCallVisit);
+        addVisit("MethodCall", this::methodCallVisit);
+        addVisit("ArrayAccess", this::arrayAccessVisit);
     }
 
     public List<Report> getReports() {
@@ -42,10 +43,21 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         symbolTable.setClassName(classDecl.getJmmChild(0).get("name"));
         classDecl.getJmmChild(0).getOptional("extends").ifPresent(symbolTable::setSuper);
 
+        boolean has = false;
         if (classDecl.getJmmChild(0).getOptional("extends").isPresent()) {
             if (!symbolTable.getImports().contains(symbolTable.getSuper())) {
-                reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(classDecl.get("line")), Integer.parseInt(classDecl.get("col")), "You need to import the class '" + symbolTable.getSuper() + "' to extend it", null));
-                return -1;
+                for (var imp : symbolTable.getImports()) {
+                    var splitImport = imp.split("\\.");
+                    var lastImport = splitImport[splitImport.length - 1];
+                    if (lastImport.equals(symbolTable.getSuper())) {
+                        has = true;
+                        break;
+                    }
+                }
+                if (!has) {
+                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(classDecl.get("line")), Integer.parseInt(classDecl.get("col")), "You need to import the class '" + symbolTable.getSuper() + "' to extend it", null));
+                    return -1;
+                }
             }
         }
 
@@ -109,10 +121,21 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
             }
             Type type = new Type(varType.get(i), varType.get(i).equals("integer array") || varType.get(i).equals("string array"));
             Symbol symbol = new Symbol(type, varName.get(i));
+            boolean has = false;
             if (!type.getName().equals("int") && !type.getName().equals("String") && !type.getName().equals("boolean") && !type.isArray()) {
                 if (!symbolTable.getImports().contains(type.getName())) {
-                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(varDecl.get("line")), Integer.parseInt(varDecl.get("col")), "Found var of type '" + type.getName() + "' but is not imported", null));
-                    return -1;
+                    for (var imp : symbolTable.getImports()) {
+                        var splitImport = imp.split("\\.");
+                        var lastImport = splitImport[splitImport.length - 1];
+                        if (lastImport.equals(symbolTable.getSuper())) {
+                            has = true;
+                            break;
+                        }
+                    }
+                    if (!has) {
+                        reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(varDecl.get("line")), Integer.parseInt(varDecl.get("col")), "Found var of type '" + type.getName() + "' but is not imported", null));
+                        return -1;
+                    }
                 }
             }
             symbols.add(symbol);
@@ -124,7 +147,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
     private Integer returnExpVisit(JmmNode returnExp, SymbolTableBuilder symbolTable) {
         // TODO: needs more cases
         if (returnExp.getJmmChild(0).getKind().equals("Id")) {
-            var value = returnExp.getJmmChild(0).get("value");
+            var value = returnExp.getJmmChild(0).get("name");
             for (var variable : symbolTable.getLocalVariables(returnExp.getAncestor("MethodDeclaration").get().get("name"))) {
                 if (variable.getName().equals(value)) {
                     return 0;
@@ -149,8 +172,8 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                     return 0;
                 }
                 if (binOp.getJmmChild(0).getKind().equals("Id") && binOp.getJmmChild(1).getKind().equals("Id")) {
-                    if (symbolTable.getVariableType(binOp.getJmmChild(0).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")
-                    && symbolTable.getVariableType(binOp.getJmmChild(1).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
+                    if (symbolTable.getVariableType(binOp.getJmmChild(0).get("name"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")
+                    && symbolTable.getVariableType(binOp.getJmmChild(1).get("name"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
                         return 0;
                     }
                 }
@@ -162,7 +185,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                 }
                 if (binOp.getJmmChild(0).getKind().equals("IntLiteral")) {
                     if (binOp.getJmmChild(1).getKind().equals("Id")) {
-                        if (symbolTable.getVariableType(binOp.getJmmChild(1).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
+                        if (symbolTable.getVariableType(binOp.getJmmChild(1).get("name"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
                             return 0;
                         }
                     }
@@ -174,24 +197,24 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                 }
                 if (binOp.getJmmChild(0).getKind().equals("Id")) {
                     if (binOp.getJmmChild(1).getKind().equals("IntLiteral")) {
-                        if (symbolTable.getVariableType(binOp.getJmmChild(0).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
+                        if (symbolTable.getVariableType(binOp.getJmmChild(0).get("name"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
                             return 0;
                         }
                     }
                     if (binOp.getJmmChild(1).getKind().equals("MethodCall")) {
-                        if (symbolTable.getVariableType(binOp.getJmmChild(0).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int") && symbolTable.getReturnType(binOp.getJmmChild(1).getJmmChild(1).get("name")).getName().equals("int")) {
+                        if (symbolTable.getVariableType(binOp.getJmmChild(0).get("name"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int") && symbolTable.getReturnType(binOp.getJmmChild(1).getJmmChild(1).get("name")).getName().equals("int")) {
                             return 0;
                         }
                     }
                 }
                 if (binOp.getJmmChild(0).getKind().equals("MethodCall")) {
                     if (binOp.getJmmChild(1).getKind().equals("IntLiteral")) {
-                        if (symbolTable.getReturnType(binOp.getJmmChild(0).getJmmChild(1).get("value")).getName().equals("int")) {
+                        if (symbolTable.getReturnType(binOp.getJmmChild(0).getJmmChild(1).get("name")).getName().equals("int")) {
                             return 0;
                         }
                     }
                     if (binOp.getJmmChild(1).getKind().equals("Id")) {
-                        if (symbolTable.getReturnType(binOp.getJmmChild(0).getJmmChild(1).get("value")).getName().equals("int") && symbolTable.getVariableType(binOp.getJmmChild(1).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
+                        if (symbolTable.getReturnType(binOp.getJmmChild(0).getJmmChild(1).get("name")).getName().equals("int") && symbolTable.getVariableType(binOp.getJmmChild(1).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
                             return 0;
                         }
                     }
@@ -203,6 +226,37 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
     }
 
     private Integer methodCallVisit(JmmNode methodCall, SymbolTableBuilder symbolTable) {
+        if (methodCall.getJmmChild(0).getKind().equals("Id")) {
+            var call = methodCall.getJmmChild(0);
+            if (call.get("name").equals("this")) {
+                return 0;
+            }
+            boolean has = false;
+            if (!symbolTable.getImports().contains(call.get("name"))) {
+                for (var imp : symbolTable.getImports()) {
+                    var splitImport = imp.split("\\.");
+                    var lastImport = splitImport[splitImport.length - 1];
+                    if (lastImport.equals(symbolTable.getSuper())) {
+                        has = true;
+                        break;
+                    }
+                }
+                if (!has) {
+                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(methodCall.get("line")), Integer.parseInt(methodCall.get("col")), "import is missing for '" + call.get("name") + "'", null));
+                    return -1;
+                }
+            }
+        }
+        return 0;
+    }
+
+    private Integer arrayAccessVisit(JmmNode arrayAccess, SymbolTableBuilder symbolTable) {
+        var array = arrayAccess.getJmmChild(0);
+        if (!symbolTable.getVariableType(array.get("name"), arrayAccess.getAncestor("MethodDeclaration").get().get("name")).equals("integer array") &&
+                !symbolTable.getVariableType(array.get("name"), arrayAccess.getAncestor("MethodDeclaration").get().get("name")).equals("string array")) {
+            reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arrayAccess.get("line")), Integer.parseInt(arrayAccess.get("col")), "'" + array.get("name") + "' is not an array", null));
+            return -1;
+        }
         return 0;
     }
 }

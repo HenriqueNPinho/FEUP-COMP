@@ -185,7 +185,7 @@ ExpressionTerminal #void:
 ;
 
 ExpressionFirst #void :
-    IntLiteral | < FALSE > ({ jjtThis.put("value", "false"); }) #Bool | < TRUE > ({ jjtThis.put("value", "true"); }) #Bool | < IDENTIFIER > ({ jjtThis.put("value", lastConsumedToken.getImage()); }) #Id  | < THIS >  ({ jjtThis.put("name", "this"); }) #Id |
+    IntLiteral | < FALSE > ({ jjtThis.put("value", "false"); }) #Bool | < TRUE > ({ jjtThis.put("value", "true"); }) #Bool | < IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) #Id  | < THIS >  ({ jjtThis.put("name", "this"); }) #Id |
     < NEW > ((< INT > < OPEN_SQUARE_PAREN > Expression < CLOSE_SQUARE_PAREN >) #IntArrayInitialization | (< IDENTIFIER > ({ jjtThis.put("name", lastConsumedToken.getImage()); }) #Id < OPEN_PAREN > < CLOSE_PAREN > ) #ClassInitialization) |
     < OPEN_PAREN > Expression < CLOSE_PAREN >
 ;
