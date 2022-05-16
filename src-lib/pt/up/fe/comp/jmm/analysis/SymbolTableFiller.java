@@ -27,6 +27,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         addVisit("BinOp", this::binOpVisit);
         addVisit("MethodCall", this::methodCallVisit);
         addVisit("ArrayAccess", this::arrayAccessVisit);
+        addVisit("Assignment", this::assignmentVisit);
     }
 
     public List<Report> getReports() {
@@ -146,9 +147,10 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
 
     private Integer returnExpVisit(JmmNode returnExp, SymbolTableBuilder symbolTable) {
         // TODO: needs more cases
+        var method = returnExp.getAncestor("MethodDeclaration").get().get("name");
         if (returnExp.getJmmChild(0).getKind().equals("Id")) {
             var value = returnExp.getJmmChild(0).get("name");
-            for (var variable : symbolTable.getLocalVariables(returnExp.getAncestor("MethodDeclaration").get().get("name"))) {
+            for (var variable : symbolTable.getLocalVariables(method)) {
                 if (variable.getName().equals(value)) {
                     return 0;
                 }
@@ -160,6 +162,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
 
     private Integer binOpVisit(JmmNode binOp, SymbolTableBuilder symbolTable) {
         var op = binOp.get("op");
+        var method = binOp.getAncestor("MethodDeclaration").get().get("name");
         switch (op) {
             case "and":
                 return 0;
@@ -172,8 +175,8 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                     return 0;
                 }
                 if (binOp.getJmmChild(0).getKind().equals("Id") && binOp.getJmmChild(1).getKind().equals("Id")) {
-                    if (symbolTable.getVariableType(binOp.getJmmChild(0).get("name"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")
-                    && symbolTable.getVariableType(binOp.getJmmChild(1).get("name"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
+                    if (symbolTable.getVariableType(binOp.getJmmChild(0).get("name"), method).equals("int")
+                    && symbolTable.getVariableType(binOp.getJmmChild(1).get("name"), method).equals("int")) {
                         return 0;
                     }
                 }
@@ -185,7 +188,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                 }
                 if (binOp.getJmmChild(0).getKind().equals("IntLiteral")) {
                     if (binOp.getJmmChild(1).getKind().equals("Id")) {
-                        if (symbolTable.getVariableType(binOp.getJmmChild(1).get("name"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
+                        if (symbolTable.getVariableType(binOp.getJmmChild(1).get("name"), method).equals("int")) {
                             return 0;
                         }
                     }
@@ -197,12 +200,12 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                 }
                 if (binOp.getJmmChild(0).getKind().equals("Id")) {
                     if (binOp.getJmmChild(1).getKind().equals("IntLiteral")) {
-                        if (symbolTable.getVariableType(binOp.getJmmChild(0).get("name"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
+                        if (symbolTable.getVariableType(binOp.getJmmChild(0).get("name"), method).equals("int")) {
                             return 0;
                         }
                     }
                     if (binOp.getJmmChild(1).getKind().equals("MethodCall")) {
-                        if (symbolTable.getVariableType(binOp.getJmmChild(0).get("name"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int") && symbolTable.getReturnType(binOp.getJmmChild(1).getJmmChild(1).get("name")).getName().equals("int")) {
+                        if (symbolTable.getVariableType(binOp.getJmmChild(0).get("name"), method).equals("int") && symbolTable.getReturnType(binOp.getJmmChild(1).getJmmChild(1).get("name")).getName().equals("int")) {
                             return 0;
                         }
                     }
@@ -214,7 +217,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                         }
                     }
                     if (binOp.getJmmChild(1).getKind().equals("Id")) {
-                        if (symbolTable.getReturnType(binOp.getJmmChild(0).getJmmChild(1).get("name")).getName().equals("int") && symbolTable.getVariableType(binOp.getJmmChild(1).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
+                        if (symbolTable.getReturnType(binOp.getJmmChild(0).getJmmChild(1).get("name")).getName().equals("int") && symbolTable.getVariableType(binOp.getJmmChild(1).get("value"), method).equals("int")) {
                             return 0;
                         }
                     }
@@ -251,11 +254,42 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
     }
 
     private Integer arrayAccessVisit(JmmNode arrayAccess, SymbolTableBuilder symbolTable) {
+        // TODO: probably needs more cases
         var array = arrayAccess.getJmmChild(0);
-        if (!symbolTable.getVariableType(array.get("name"), arrayAccess.getAncestor("MethodDeclaration").get().get("name")).equals("integer array") &&
-                !symbolTable.getVariableType(array.get("name"), arrayAccess.getAncestor("MethodDeclaration").get().get("name")).equals("string array")) {
+        var access = arrayAccess.getJmmChild(1);
+        var method = arrayAccess.getAncestor("MethodDeclaration").get().get("name");
+        if (!symbolTable.getVariableType(array.get("name"), method).equals("integer array") &&
+                !symbolTable.getVariableType(array.get("name"), method).equals("string array")) {
             reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arrayAccess.get("line")), Integer.parseInt(arrayAccess.get("col")), "'" + array.get("name") + "' is not an array", null));
             return -1;
+        }
+        if (access.getKind().equals("IntLiteral")) {
+            return 0;
+        }
+        if (access.getKind().equals("Id")) {
+            if (!symbolTable.getVariableType(access.get("name"), method).equals("int")) {
+                reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arrayAccess.get("line")), Integer.parseInt(arrayAccess.get("col")), "'" + access.get("name") + "' is not an integer", null));
+                return -1;
+            }
+        }
+        return 0;
+    }
+
+    private Integer assignmentVisit(JmmNode assignment, SymbolTableBuilder symbolTable) {
+        var name = assignment.get("name");
+        var method = assignment.getAncestor("MethodDeclaration").get().get("name");
+        if (assignment.getJmmChild(0).getKind().equals("IntLiteral")) {
+            if (!symbolTable.getVariableType(name, method).equals("int")) {
+                reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(assignment.get("line")), Integer.parseInt(assignment.get("col")), "can not assign '" + symbolTable.getVariableType(name, method) + "' to int", null));
+                return -1;
+            }
+        }
+        if (assignment.getJmmChild(0).getKind().equals("Id")) {
+            var name2 = assignment.getJmmChild(0).get("name");
+            if (!(symbolTable.getVariableType(name, method)).equals(symbolTable.getVariableType(name2, method))) {
+                reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(assignment.get("line")), Integer.parseInt(assignment.get("col")), "types '" + symbolTable.getVariableType(name, method) + "' and '" + symbolTable.getVariableType(name2, method) + "' are not compatible", null));
+                return -1;
+            }
         }
         return 0;
     }
