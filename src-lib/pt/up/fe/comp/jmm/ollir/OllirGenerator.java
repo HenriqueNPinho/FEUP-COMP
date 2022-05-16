@@ -47,7 +47,7 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
         if (classDecl.getJmmChild(1).getKind().equals("VarDeclaration")) {
             for (var field : symbolTable.getFields()) {
-                code.append(".field ").append(OllirUtils.getCode(field)).append(";\n");
+                code.append(".field ").append(OurOllirUtils.getCode(field)).append(";\n");
             }
         }
 
@@ -72,12 +72,12 @@ public class OllirGenerator extends AJmmVisitor<Integer, Integer> {
 
         var params = symbolTable.getParameters(methodSignature);
 
-        var paramCode = params.stream().map(symbol -> OllirUtils.getCode(symbol)).collect(Collectors.joining(", "));
+        var paramCode = params.stream().map(symbol -> OurOllirUtils.getCode(symbol)).collect(Collectors.joining(", "));
 
         code.append(paramCode);
         code.append(").");
 
-        code.append(OllirUtils.getCode(symbolTable.getReturnType(methodSignature)));
+        code.append(OurOllirUtils.getCode(symbolTable.getReturnType(methodSignature)));
         code.append(" {\n");
         code.append("}\n");
 

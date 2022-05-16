@@ -23,6 +23,8 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         addVisit("MethodDeclaration", this::MethodDeclVisit);
         addVisit("Parameters", this::ParametersVisit);
         addVisit("VarDeclaration", this::VarDeclVisit);
+        addVisit("ReturnExp", this::returnExpVisit);
+        addVisit("BinOp", this::binOpVisit);
     }
 
     public List<Report> getReports() {
@@ -66,6 +68,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
 
         symbolTable.addReturnType(methodString, type);
         symbolTable.addMethod(methodString);
+
         return 0;
     }
 
@@ -101,6 +104,85 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
             symbols.add(symbol);
         }
         symbolTable.addLocalVariables(varDecl.getAncestor("MethodDeclaration").get().get("name"), symbols);
+        return 0;
+    }
+
+    private Integer returnExpVisit(JmmNode returnExp, SymbolTableBuilder symbolTable) {
+        // TODO: needs more cases
+        if (returnExp.getJmmChild(0).getKind().equals("Id")) {
+            var value = returnExp.getJmmChild(0).get("value");
+            for (var variable : symbolTable.getLocalVariables(returnExp.getAncestor("MethodDeclaration").get().get("name"))) {
+                if (variable.getName().equals(value)) {
+                    return 0;
+                }
+            }
+            reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(returnExp.get("line")), Integer.parseInt(returnExp.get("col")), "Variable '" + value + "' has not been declared", null));
+        }
+        return -1;
+    }
+
+    private Integer binOpVisit(JmmNode binOp, SymbolTableBuilder symbolTable) {
+        var op = binOp.get("op");
+        switch (op) {
+            case "add":
+            case "sub":
+            case "mult":
+            case "div":
+            case "lower":
+                if (binOp.getJmmChild(0).getKind().equals("IntLiteral") && binOp.getJmmChild(1).getKind().equals("IntLiteral")) {
+                    return 0;
+                }
+                if (binOp.getJmmChild(0).getKind().equals("Id") && binOp.getJmmChild(1).getKind().equals("Id")) {
+                    if (symbolTable.getVariableType(binOp.getJmmChild(0).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")
+                    && symbolTable.getVariableType(binOp.getJmmChild(1).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
+                        return 0;
+                    }
+                }
+                if (binOp.getJmmChild(0).getKind().equals("MethodCall") && binOp.getJmmChild(1).getKind().equals("MethodCall")) {
+                    if (symbolTable.getReturnType(binOp.getJmmChild(0).getJmmChild(1).get("name")).getName().equals("int")
+                    && symbolTable.getReturnType(binOp.getJmmChild(1).getJmmChild(1).get("name")).getName().equals("int")) {
+                        return 0;
+                    }
+                }
+                if (binOp.getJmmChild(0).getKind().equals("IntLiteral")) {
+                    if (binOp.getJmmChild(1).getKind().equals("Id")) {
+                        if (symbolTable.getVariableType(binOp.getJmmChild(1).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
+                            return 0;
+                        }
+                    }
+                    if (binOp.getJmmChild(1).getKind().equals("MethodCall")) {
+                        if (symbolTable.getReturnType(binOp.getJmmChild(1).getJmmChild(1).get("name")).getName().equals("int")) {
+                            return 0;
+                        }
+                    }
+                }
+                if (binOp.getJmmChild(0).getKind().equals("Id")) {
+                    if (binOp.getJmmChild(1).getKind().equals("IntLiteral")) {
+                        if (symbolTable.getVariableType(binOp.getJmmChild(0).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
+                            return 0;
+                        }
+                    }
+                    if (binOp.getJmmChild(1).getKind().equals("MethodCall")) {
+                        if (symbolTable.getVariableType(binOp.getJmmChild(0).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int") && symbolTable.getReturnType(binOp.getJmmChild(1).getJmmChild(1).get("name")).getName().equals("int")) {
+                            return 0;
+                        }
+                    }
+                }
+                if (binOp.getJmmChild(0).getKind().equals("MethodCall")) {
+                    if (binOp.getJmmChild(1).getKind().equals("IntLiteral")) {
+                        if (symbolTable.getReturnType(binOp.getJmmChild(0).getJmmChild(1).get("value")).getName().equals("int")) {
+                            return 0;
+                        }
+                    }
+                    if (binOp.getJmmChild(1).getKind().equals("Id")) {
+                        if (symbolTable.getReturnType(binOp.getJmmChild(0).getJmmChild(1).get("value")).getName().equals("int") && symbolTable.getVariableType(binOp.getJmmChild(1).get("value"), binOp.getAncestor("MethodDeclaration").get().get("name")).equals("int")) {
+                            return 0;
+                        }
+                    }
+                }
+                reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(binOp.get("line")), Integer.parseInt(binOp.get("col")), "You can only add/sub/div/mult/lower int values", null));
+                return -1;
+        }
         return 0;
     }
 }
