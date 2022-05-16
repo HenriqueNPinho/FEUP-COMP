@@ -25,6 +25,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         addVisit("VarDeclaration", this::VarDeclVisit);
         addVisit("ReturnExp", this::returnExpVisit);
         addVisit("BinOp", this::binOpVisit);
+        //addVisit("MethodCall", this::methodCallVisit);
     }
 
     public List<Report> getReports() {
@@ -40,6 +41,13 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
     private Integer ClassDeclVisit(JmmNode classDecl, SymbolTableBuilder symbolTable) {
         symbolTable.setClassName(classDecl.getJmmChild(0).get("name"));
         classDecl.getJmmChild(0).getOptional("extends").ifPresent(symbolTable::setSuper);
+
+        if (classDecl.getJmmChild(0).getOptional("extends").isPresent()) {
+            if (!symbolTable.getImports().contains(symbolTable.getSuper())) {
+                reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(classDecl.get("line")), Integer.parseInt(classDecl.get("col")), "You need to import the class '" + symbolTable.getSuper() + "' to extend it", null));
+                return -1;
+            }
+        }
 
         if (classDecl.getJmmChild(1).getKind().equals("VarDeclaration")) {
             var fieldNames = classDecl.getJmmChild(1).getChildren().stream().map(id -> id.get("name")).collect(Collectors.toList());
@@ -101,6 +109,12 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
             }
             Type type = new Type(varType.get(i), varType.get(i).equals("integer array") || varType.get(i).equals("string array"));
             Symbol symbol = new Symbol(type, varName.get(i));
+            if (!type.getName().equals("int") && !type.getName().equals("String") && !type.getName().equals("boolean") && !type.isArray()) {
+                if (!symbolTable.getImports().contains(type.getName())) {
+                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(varDecl.get("line")), Integer.parseInt(varDecl.get("col")), "Found var of type '" + type.getName() + "' but is not imported", null));
+                    return -1;
+                }
+            }
             symbols.add(symbol);
         }
         symbolTable.addLocalVariables(varDecl.getAncestor("MethodDeclaration").get().get("name"), symbols);
@@ -124,6 +138,8 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
     private Integer binOpVisit(JmmNode binOp, SymbolTableBuilder symbolTable) {
         var op = binOp.get("op");
         switch (op) {
+            case "and":
+                return 0;
             case "add":
             case "sub":
             case "mult":
@@ -183,6 +199,10 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                 reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(binOp.get("line")), Integer.parseInt(binOp.get("col")), "You can only add/sub/div/mult/lower int values", null));
                 return -1;
         }
+        return 0;
+    }
+
+    private Integer methodCallVisit(JmmNode methodCall, SymbolTableBuilder symbolTable) {
         return 0;
     }
 }

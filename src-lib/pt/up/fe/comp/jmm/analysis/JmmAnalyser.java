@@ -1,11 +1,8 @@
 package pt.up.fe.comp.jmm.analysis;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import pt.up.fe.comp.jmm.analysis.analysers.SingleMainMethodCheck;
-import pt.up.fe.comp.jmm.analysis.analysers.SingleMainMethodCheckV2;
 import pt.up.fe.comp.jmm.parser.JmmParserResult;
 import pt.up.fe.comp.jmm.report.Report;
 
