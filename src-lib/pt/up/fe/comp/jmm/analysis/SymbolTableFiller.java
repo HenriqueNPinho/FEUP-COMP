@@ -155,6 +155,11 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                     return 0;
                 }
             }
+            for (var variable : symbolTable.getParameters(method)) {
+                if (variable.getName().equals(value)) {
+                    return 0;
+                }
+            }
             reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(returnExp.get("line")), Integer.parseInt(returnExp.get("col")), "Variable '" + value + "' has not been declared", null));
         }
         return -1;
