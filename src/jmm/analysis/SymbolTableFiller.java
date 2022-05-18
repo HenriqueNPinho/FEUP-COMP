@@ -309,6 +309,14 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         }
         if (assignment.getJmmChild(0).getKind().equals("Id")) {
             var name2 = assignment.getJmmChild(0).get("name");
+            if (symbolTable.getVariableType(name2, method).equals(symbolTable.getClassName()) &&
+                    symbolTable.getVariableType(name, method).equals(symbolTable.getSuper())) {
+                return 0;
+            }
+            if (symbolTable.getImports().contains(symbolTable.getVariableType(name, method)) &&
+            symbolTable.getImports().contains(symbolTable.getVariableType(name2, method))) {
+                return 0;
+            }
             if (!(symbolTable.getVariableType(name, method)).equals(symbolTable.getVariableType(name2, method))) {
                 reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(assignment.get("line")), Integer.parseInt(assignment.get("col")), "types '" + symbolTable.getVariableType(name, method) + "' and '" + symbolTable.getVariableType(name2, method) + "' are not compatible", null));
                 return -1;
