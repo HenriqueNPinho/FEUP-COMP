@@ -3,8 +3,8 @@ package pt.up.fe.comp;
 import java.util.Collections;
 import java.util.Map;
 
+import jmm.ast.LineColAnnotator;
 import pt.up.fe.comp.jmm.ast.JmmNode;
-import pt.up.fe.comp.jmm.ast.LineColAnnotator;
 import pt.up.fe.comp.jmm.parser.JmmParser;
 import pt.up.fe.comp.jmm.parser.JmmParserResult;
 import pt.up.fe.comp.jmm.report.Report;

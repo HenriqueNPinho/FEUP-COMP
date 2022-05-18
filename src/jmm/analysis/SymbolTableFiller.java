@@ -1,4 +1,4 @@
-package pt.up.fe.comp.jmm.analysis;
+package jmm.analysis;
 
 import pt.up.fe.comp.jmm.analysis.table.Symbol;
 import pt.up.fe.comp.jmm.analysis.table.Type;
@@ -152,22 +152,35 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
             var value = returnExp.getJmmChild(0).get("name");
             for (var variable : symbolTable.getLocalVariables(method)) {
                 if (variable.getName().equals(value)) {
+                    if (!variable.getType().getName().equals(returnExp.getAncestor("MethodDeclaration").get().get("return type"))) {
+                        reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(returnExp.get("line")), Integer.parseInt(returnExp.get("col")), "Return type does not match function return type", null));
+                        return -1;
+                    }
                     return 0;
                 }
             }
             for (var variable : symbolTable.getParameters(method)) {
                 if (variable.getName().equals(value)) {
+                    if (!variable.getType().getName().equals(returnExp.getAncestor("MethodDeclaration").get().get("return type"))) {
+                        reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(returnExp.get("line")), Integer.parseInt(returnExp.get("col")), "Return type does not match function return type", null));
+                        return -1;
+                    }
                     return 0;
                 }
             }
             for (var variable : symbolTable.getFields()) {
                 if (variable.getName().equals(value)) {
+                    if (!variable.getType().getName().equals(returnExp.getAncestor("MethodDeclaration").get().get("return type"))) {
+                        reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(returnExp.get("line")), Integer.parseInt(returnExp.get("col")), "Return type does not match function return type", null));
+                        return -1;
+                    }
                     return 0;
                 }
             }
             reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(returnExp.get("line")), Integer.parseInt(returnExp.get("col")), "Variable '" + value + "' has not been declared", null));
+            return -1;
         }
-        return -1;
+        return 0;
     }
 
     private Integer binOpVisit(JmmNode binOp, SymbolTableBuilder symbolTable) {

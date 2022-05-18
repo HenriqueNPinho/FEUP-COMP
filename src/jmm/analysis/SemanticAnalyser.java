@@ -1,4 +1,4 @@
-package pt.up.fe.comp.jmm.analysis;
+package jmm.analysis;
 
 import pt.up.fe.comp.jmm.report.Report;
 

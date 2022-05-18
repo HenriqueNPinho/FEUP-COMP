@@ -1,6 +1,8 @@
-package pt.up.fe.comp.jmm.ast;
+package jmm.ast;
 
 import pt.up.fe.comp.BaseNode;
+import pt.up.fe.comp.jmm.ast.JmmNode;
+import pt.up.fe.comp.jmm.ast.PreorderJmmVisitor;
 
 public class LineColAnnotator extends PreorderJmmVisitor<Integer, Integer> {
 
