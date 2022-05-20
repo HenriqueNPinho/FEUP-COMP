@@ -108,16 +108,20 @@ public class SymbolTableBuilder implements SymbolTable {
     }
 
     public String getVariableType(String varName, String methodName) {
-        if (localVariables.isEmpty())
+        if (localVariables.isEmpty() && methodParams.isEmpty())
                 return "";
-        for (var symbol : localVariables.get(methodName)) {
-            if (symbol.getName().equals(varName)) {
-                return symbol.getType().getName();
+        if (!localVariables.isEmpty()) {
+            for (var symbol : localVariables.get(methodName)) {
+                if (symbol.getName().equals(varName)) {
+                    return symbol.getType().getName();
+                }
             }
         }
-        for (var symbol2 : getParameters(methodName)) {
-            if (symbol2.getName().equals(varName)) {
-                return symbol2.getType().getName();
+        if (!methodParams.isEmpty()) {
+            for (var symbol2 : getParameters(methodName)) {
+                if (symbol2.getName().equals(varName)) {
+                    return symbol2.getType().getName();
+                }
             }
         }
         return "";

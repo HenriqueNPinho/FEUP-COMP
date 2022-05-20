@@ -29,6 +29,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         addVisit("ArrayAccess", this::arrayAccessVisit);
         addVisit("Assignment", this::assignmentVisit);
         addVisit("Condition", this::conditionVisit);
+        addVisit("Arguments", this::argumentsVisit);
     }
 
     public List<Report> getReports() {
@@ -149,7 +150,8 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
     private Integer returnExpVisit(JmmNode returnExp, SymbolTableBuilder symbolTable) {
         // TODO: needs more cases
         var method = returnExp.getAncestor("MethodDeclaration").get().get("name");
-        if (returnExp.getJmmChild(0).getKind().equals("Id")) {
+        var child = returnExp.getJmmChild(0).getKind();
+        if (child.equals("Id")) {
             var value = returnExp.getJmmChild(0).get("name");
             for (var variable : symbolTable.getLocalVariables(method)) {
                 if (variable.getName().equals(value)) {
@@ -180,6 +182,14 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
             }
             reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(returnExp.get("line")), Integer.parseInt(returnExp.get("col")), "Variable '" + value + "' has not been declared", null));
             return -1;
+        }
+        if (child.equals("MethodCall")) {
+            if (symbolTable.getMethods().contains(returnExp.getJmmChild(0).getJmmChild(1).get("name"))) {
+                if (!symbolTable.getReturnType(returnExp.getJmmChild(0).getJmmChild(1).get("name")).getName().equals(returnExp.getAncestor("MethodDeclaration").get().get("return type"))) {
+                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(returnExp.get("line")), Integer.parseInt(returnExp.get("col")), "Return type does not match function return type", null));
+                    return -1;
+                }
+            }
         }
         return 0;
     }
@@ -336,7 +346,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
             symbolTable.getImports().contains(symbolTable.getVariableType(name2, method))) {
                 return 0;
             }
-            if (!(symbolTable.getVariableType(name, method)).equals(symbolTable.getVariableType(name2, method))) {
+            if (!symbolTable.getVariableType(name, method).equals(symbolTable.getVariableType(name2, method))) {
                 reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(assignment.get("line")), Integer.parseInt(assignment.get("col")), "types '" + symbolTable.getVariableType(name, method) + "' and '" + symbolTable.getVariableType(name2, method) + "' are not compatible", null));
                 return -1;
             }
@@ -360,6 +370,22 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
             if (!symbolTable.getVariableType(condition.getJmmChild(0).get("name"), method).equals("boolean")) {
                 reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(condition.get("line")), Integer.parseInt(condition.get("col")), "condition can not be of type '" + symbolTable.getVariableType(condition.getJmmChild(0).get("name"), method) + "'", null));
                 return -1;
+            }
+        }
+        return 0;
+    }
+
+    private Integer argumentsVisit(JmmNode arguments, SymbolTableBuilder symbolTable) {
+        var method = arguments.getAncestor("MethodDeclaration").get().get("name");
+        if (symbolTable.getParameters(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")).isEmpty()) {
+            return 0;
+        }
+        for (int i = 0; i < arguments.getNumChildren(); ++i) {
+            if (arguments.getJmmChild(i).getKind().equals("Id")) {
+                if (!symbolTable.getVariableType(arguments.getJmmChild(i).get("name"), method).equals(symbolTable.getParameters(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")).get(i).getType().getName())) {
+                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arguments.get("line")), Integer.parseInt(arguments.get("col")), "argument of type '" + symbolTable.getVariableType(arguments.getJmmChild(i).get("name"), method) + "' does not match with param", null));
+                    return -1;
+                }
             }
         }
         return 0;
