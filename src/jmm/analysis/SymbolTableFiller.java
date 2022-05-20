@@ -199,7 +199,26 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         var method = binOp.getAncestor("MethodDeclaration").get().get("name");
         switch (op) {
             case "and":
-                return 0;
+                if (binOp.getJmmChild(0).getKind().equals("Bool") && binOp.getJmmChild(1).getKind().equals("Bool")) {
+                    return 0;
+                }
+                if (binOp.getJmmChild(0).getKind().equals("Id")) {
+                    if (binOp.getJmmChild(1).getKind().equals("Bool") && symbolTable.getVariableType(binOp.getJmmChild(0).get("name"), method).equals("boolean")) {
+                        return 0;
+                    }
+                }
+                if (binOp.getJmmChild(0).getKind().equals("Bool")) {
+                    if (binOp.getJmmChild(1).getKind().equals("Id") && symbolTable.getVariableType(binOp.getJmmChild(1).get("name"), method).equals("boolean")) {
+                        return 0;
+                    }
+                }
+                if (binOp.getJmmChild(0).getKind().equals("Id") && binOp.getJmmChild(1).getKind().equals("Id")) {
+                    if (symbolTable.getVariableType(binOp.getJmmChild(0).get("name"), method).equals("boolean") && symbolTable.getVariableType(binOp.getJmmChild(1).get("name"), method).equals("boolean")) {
+                        return 0;
+                    }
+                }
+                reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(binOp.get("line")), Integer.parseInt(binOp.get("col")), "You can only use and on boolean values", null));
+                return -1;
             case "add":
             case "sub":
             case "mult":

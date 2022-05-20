@@ -24,6 +24,8 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
         addVisit("ClassDeclaration", this::classDeclVisit);
         addVisit("MethodDeclaration", this::methodDeclVisit);
+        addVisit("BinOp", this::binOpVisit);
+        addVisit("ReturnExp", this::returnExpVisit);
     }
 
     @Override
@@ -73,7 +75,7 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
     private Integer methodDeclVisit(JmmNode methodDecl, Integer dummy) {
         var methodSignature = methodDecl.get("name");
-        var isStatic = Boolean.valueOf(methodDecl.getOptional("static").toString());
+        boolean isStatic = Boolean.parseBoolean(methodDecl.getOptional("static").toString());
 
         jasminCode.append(".method public ");
         if (isStatic) {
@@ -88,10 +90,39 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         jasminCode.append(paramCode);
         jasminCode.append(")");
 
-        jasminCode.append(AstToJasminReturn.getJasminType(symbolTable.getReturnType(methodSignature).getName()));
+        jasminCode.append(AstToJasminReturn.getJasminType(symbolTable.getReturnType(methodSignature).getName())).append("\n");
+
+        jasminCode.append(".limit stack 99\n").append("limit locals 2\n");
+
+        for (var child : methodDecl.getChildren()) {
+            visit(child);
+        }
+
+        jasminCode.append(".end method");
 
         return 0;
     }
 
+    private Integer binOpVisit(JmmNode binOp, Integer dummy) {
+        var op = binOp.get("op");
+        if (binOp.getJmmChild(0).getKind().equals("Id") && binOp.getJmmChild(1).getKind().equals("Id")) {
+            jasminCode.append("iload_0\n").append("iload_0\n");
+            switch (op) {
+                case "add":
+                    jasminCode.append("iadd\n");
+                case "sub":
+                    jasminCode.append("isub\n");
+                case "mul":
+                    jasminCode.append("imul\n");
+                case "div":
+                    jasminCode.append("idiv\n");
+            }
+        }
+        return 0;
+    }
 
+    private Integer returnExpVisit(JmmNode returnExp, Integer dummy) {
+        jasminCode.append("ireturn\n");
+        return 0;
+    }
 }
