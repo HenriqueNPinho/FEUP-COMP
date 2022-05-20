@@ -7,9 +7,6 @@ public class AstToJasminReturn {
             case "integer array":
             case "int":
                 return "I";
-            case "string array":
-            case "string":
-                return "Ljava/lang/String";
             case "boolean":
                 return "B";
             case "void":

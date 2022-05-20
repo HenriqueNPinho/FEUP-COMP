@@ -122,10 +122,10 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                     return -1;
                 }
             }
-            Type type = new Type(varType.get(i), varType.get(i).equals("integer array") || varType.get(i).equals("string array"));
+            Type type = new Type(varType.get(i), varType.get(i).equals("integer array"));
             Symbol symbol = new Symbol(type, varName.get(i));
             boolean has = false;
-            if (!type.getName().equals("int") && !type.getName().equals("String") && !type.getName().equals("boolean") && !type.getName().equals(symbolTable.getClassName()) && !type.isArray()) {
+            if (!type.getName().equals("int") && !type.getName().equals("boolean") && !type.getName().equals(symbolTable.getClassName()) && !type.isArray()) {
                 if (!symbolTable.getImports().contains(type.getName())) {
                     for (var imp : symbolTable.getImports()) {
                         var splitImport = imp.split("\\.");

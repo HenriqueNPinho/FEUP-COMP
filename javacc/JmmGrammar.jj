@@ -77,7 +77,6 @@ FirstImport #void:
 Type #void:
     < INT > |
     < BOOLEAN > |
-    < STRING > |
     < IDENTIFIER >
 ;
 
