@@ -1,13 +1,8 @@
 package jmm.astToJasmin;
 
-import pt.up.fe.comp.jmm.analysis.table.Symbol;
 import pt.up.fe.comp.jmm.analysis.table.Type;
 
-public class AstToJasminField {
-
-    public static String getCode(Symbol symbol) {
-        return symbol.getName() + " " + getCode(symbol.getType());
-    }
+public class AstToJasminParam {
 
     public static String getCode(Type type) {
         StringBuilder code = new StringBuilder();
@@ -17,6 +12,10 @@ public class AstToJasminField {
         }
 
         code.append(getJasminType(type.getName()));
+
+        if (type.isArray()) {
+            code.append(";");
+        }
 
         return code.toString();
     }
@@ -35,4 +34,5 @@ public class AstToJasminField {
                 return jmmType;
         }
     }
+
 }
