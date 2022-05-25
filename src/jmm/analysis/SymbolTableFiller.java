@@ -332,7 +332,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                     return -1;
                 }
             }
-        }*/
+        }
         return 0;
     }
 

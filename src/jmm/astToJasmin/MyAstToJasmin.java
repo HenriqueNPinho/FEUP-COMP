@@ -55,7 +55,7 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
             }
         }
 
-        // CONSTUCTOR
+        // CONSTRUCTOR
         jasminCode.append(".method public <init>()V").append("\n");
         jasminCode.append("aload_0").append("\n");
         jasminCode.append("invokenonvirtual ");
@@ -129,10 +129,13 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
     }
 
     private Integer varDeclVisit(JmmNode varDecl, Integer dummy){
-
+        if (varDecl.getJmmParent().getKind().equals("ClassDeclaration")) {
+            return 0;
+        }
+        return 0;
     }
 
-    private Integer AssignVisit(JmmNode assing, Integer dummy){
-
+    private Integer AssignVisit(JmmNode assign, Integer dummy){
+        return 0;
     }
 }
