@@ -310,17 +310,29 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                 }
             }
         }
-        // if method caller is class type check if method is declared
-        /*if (methodCall.getJmmChild(0).getKind().equals("Id") && methodCall.getJmmChild(1).getKind().equals("Id")) {
+
+        if (methodCall.getJmmChild(0).getKind().equals("Id") && methodCall.getJmmChild(1).getKind().equals("Id")) {
             String name1 = methodCall.getJmmChild(0).get("name");
             String name2 = methodCall.getJmmChild(1).get("name");
+
+            for (var imp : symbolTable.getImports()) {
+                var splitImport = imp.split("\\.");
+                var lastImport = splitImport[splitImport.length - 1];
+                if (lastImport.equals(name1)) {
+                    return 0;
+                }
+            }
+
             if (symbolTable.getVariableType(name1, method).equals(symbolTable.getClassName())) {
+                if (symbolTable.getSuper() != null) {
+                    return 0;
+                }
                 if (!symbolTable.getMethods().contains(name2)) {
                     reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(methodCall.get("line")), Integer.parseInt(methodCall.get("col")), "method '" + name2 + "' is not declared", null));
                     return -1;
                 }
             }
-        }*/
+        }
         return 0;
     }
 
