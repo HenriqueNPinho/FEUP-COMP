@@ -87,14 +87,14 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
         var params = symbolTable.getParameters(methodSignature);
 
-        var paramCode = params.stream().map(symbol -> AstToJasminParam.getCode(symbol.getType())).collect(Collectors.joining(" "));
+        var paramCode = params.stream().map(symbol -> AstToJasminParam.getCode(symbol.getType())).collect(Collectors.joining(""));
 
         jasminCode.append(paramCode);
         jasminCode.append(")");
 
         jasminCode.append(AstToJasminReturn.getJasminType(symbolTable.getReturnType(methodSignature).getName())).append("\n");
 
-        jasminCode.append(".limit stack 99\n").append("limit locals 2\n");
+        jasminCode.append(".limit stack 99\n").append(".limit locals 2\n");
 
         for (var child : methodDecl.getChildren()) {
             visit(child);
