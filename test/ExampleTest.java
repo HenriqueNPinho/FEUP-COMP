@@ -19,4 +19,10 @@ public class ExampleTest {
         var result = TestUtils.parse(SpecsIo.getResource("fixtures/public/CompleteTest.jmm"));
         TestUtils.noErrors(result.getReports());
     }
+
+    @Test
+    public void testJasmin(){
+        var jasminResult= TestUtils.backend(SpecsIo.getResource("fixtures/public/CompleteTest.jmm"));
+        jasminResult.compile();
+    }
 }

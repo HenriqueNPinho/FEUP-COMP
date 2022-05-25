@@ -5,14 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e0bff920-19fa-4cbd-af10-d5ed972bf4a3" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.properties" beforeDir="false" afterPath="$PROJECT_DIR$/config.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src-lib/pt/up/fe/comp/JmmAnalyser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src-lib/pt/up/fe/comp/jmm/analysis/JmmAnalyser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src-lib/pt/up/fe/comp/SymbolTableBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src-lib/pt/up/fe/comp/jmm/analysis/SymbolTableBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src-lib/pt/up/fe/comp/SymbolTableFiller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src-lib/pt/up/fe/comp/jmm/analysis/SymbolTableFiller.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pt/up/fe/comp/Launcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/pt/up/fe/comp/Launcher.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/public/CompleteTest.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/CompleteTest.jmm" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/pt/up/fe/comp/AnalysisTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/pt/up/fe/comp/AnalysisTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/javacc-full.jar" beforeDir="false" afterPath="$PROJECT_DIR$/libs/javacc-full.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jmm/analysis/SymbolTableFiller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/jmm/analysis/SymbolTableFiller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jmm/astToJasmin/MyAstToJasmin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/jmm/astToJasmin/MyAstToJasmin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/ExampleTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/ExampleTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,7 +25,11 @@
     <system id="GRADLE">
       <state>
         <task path="$PROJECT_DIR$">
-          <activation />
+          <activation>
+            <after_compile>
+              <task name="installDist" />
+            </after_compile>
+          </activation>
         </task>
         <projects_view>
           <tree_state>
@@ -78,12 +79,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "dart.analysis.tool.window.visible": "false",
+    "last_opened_file_path": "/home/henrique/Desktop/UniExample/UNI_App",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/test/fixtures/public" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.GrammarTest.testExprTrue">
+  <component name="RunManager" selected="Gradle.ExampleTest.testJasmin">
     <configuration name="MainAnalysis" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.MainAnalysis" />
       <module name="comp2022-5d.main" />
@@ -97,7 +108,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GrammarTest.testExprIntLiteral" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+    <configuration name="Cp2Test" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
@@ -110,7 +121,30 @@
           <list>
             <option value=":test" />
             <option value="--tests" />
-            <option value="&quot;pt.up.fe.comp.GrammarTest.testExprIntLiteral&quot;" />
+            <option value="&quot;pt.up.fe.comp.Cp2Test&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="ExampleTest.testJasmin" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;ExampleTest.testJasmin&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -134,29 +168,6 @@
             <option value=":test" />
             <option value="--tests" />
             <option value="&quot;pt.up.fe.comp.GrammarTest.testExprMemberCall&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <method v="2" />
-    </configuration>
-    <configuration name="GrammarTest.testExprParen" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;pt.up.fe.comp.GrammarTest.testExprParen&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -191,11 +202,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.ExampleTest.testJasmin" />
+        <item itemvalue="Gradle.Cp2Test" />
         <item itemvalue="Gradle.GrammarTest.testExprTrue" />
         <item itemvalue="Application.MainAnalysis" />
         <item itemvalue="Gradle.GrammarTest.testExprMemberCall (1)" />
-        <item itemvalue="Gradle.GrammarTest.testExprParen" />
-        <item itemvalue="Gradle.GrammarTest.testExprIntLiteral" />
       </list>
     </recent_temporary>
   </component>
