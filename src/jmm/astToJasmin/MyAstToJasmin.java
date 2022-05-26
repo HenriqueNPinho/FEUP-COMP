@@ -99,7 +99,6 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         for (var child : methodDecl.getChildren()) {
             visit(child);
         }
-
         jasminCode.append(".end method");
 
         return 0;
@@ -107,7 +106,7 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
     private Integer binOpVisit(JmmNode binOp, Integer dummy) {
         var op = binOp.get("op");
-        if (binOp.getJmmChild(0).getKind().equals("Id") && binOp.getJmmChild(1).getKind().equals("Id")) {
+        if (binOp.getJmmChild(0).getKind().equals("Id") && binOp.getJmmChild(1).getKind().equals("Id")){
             jasminCode.append("iload_0\n").append("iload_0\n");
             switch (op) {
                 case "add":
