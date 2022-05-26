@@ -6,6 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="e0bff920-19fa-4cbd-af10-d5ed972bf4a3" name="Changes" comment="update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/libs/javacc-full.jar" beforeDir="false" afterPath="$PROJECT_DIR$/libs/javacc-full.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jmm/analysis/SymbolTableFiller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/jmm/analysis/SymbolTableFiller.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/jmm/astToJasmin/MyAstToJasmin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/jmm/astToJasmin/MyAstToJasmin.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/ExampleTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/ExampleTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/public/cp2/CompileArithmetic.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/cp2/CompileArithmetic.jmm" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,6 +132,29 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
+    <configuration name="Cp2Test.test_2_02_CompileArithmetic" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;pt.up.fe.comp.Cp2Test.test_2_02_CompileArithmetic&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
     <configuration name="ExampleTest.testJasmin" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -141,29 +169,6 @@
             <option value=":test" />
             <option value="--tests" />
             <option value="&quot;ExampleTest.testJasmin&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <method v="2" />
-    </configuration>
-    <configuration name="GrammarTest.testExprMemberCall (1)" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;pt.up.fe.comp.GrammarTest.testExprMemberCall&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -200,9 +205,9 @@
       <list>
         <item itemvalue="Gradle.ExampleTest.testJasmin" />
         <item itemvalue="Gradle.Cp2Test" />
+        <item itemvalue="Gradle.Cp2Test.test_2_02_CompileArithmetic" />
         <item itemvalue="Gradle.GrammarTest.testExprTrue" />
         <item itemvalue="Application.MainAnalysis" />
-        <item itemvalue="Gradle.GrammarTest.testExprMemberCall (1)" />
       </list>
     </recent_temporary>
   </component>

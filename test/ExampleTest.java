@@ -22,6 +22,6 @@ public class ExampleTest {
     @Test
     public void testJasmin(){
         var jasminResult = TestUtils.backend(SpecsIo.getResource("fixtures/public/CompleteTest.jmm"));
-        jasminResult.compile();
+        jasminResult.run();
     }
 }

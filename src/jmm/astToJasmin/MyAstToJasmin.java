@@ -26,7 +26,6 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         addVisit("MethodDeclaration", this::methodDeclVisit);
         addVisit("BinOp", this::binOpVisit);
         addVisit("ReturnExp", this::returnExpVisit);
-        addVisit("VarDeclaration", this::varDeclVisit);
         addVisit("Assignment", this::AssignVisit);
     }
 
@@ -124,13 +123,6 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
     private Integer returnExpVisit(JmmNode returnExp, Integer dummy) {
         jasminCode.append("ireturn\n");
-        return 0;
-    }
-
-    private Integer varDeclVisit(JmmNode varDecl, Integer dummy){
-        if (varDecl.getJmmParent().getKind().equals("ClassDeclaration")) {
-            return 0;
-        }
         return 0;
     }
 

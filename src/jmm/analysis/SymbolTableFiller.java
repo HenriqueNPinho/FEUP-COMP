@@ -63,7 +63,9 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                 }
             }
         }
-
+        if(classDecl.getNumChildren()<=1){
+            return 0;
+        }
         if (classDecl.getJmmChild(1).getKind().equals("VarDeclaration")) {
             var fieldNames = classDecl.getJmmChild(1).getChildren().stream().map(id -> id.get("name")).collect(Collectors.toList());
             var fieldTypes = classDecl.getJmmChild(1).getChildren().stream().map(id -> id.get("type")).collect(Collectors.toList());
