@@ -14,14 +14,14 @@ import java.util.stream.Collectors;
 
 public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstToJasmin {
     StringBuilder jasminCode;
-    private final SymbolTable symbolTable;
+    private SymbolTable symbolTable;
     List<Report> reports;
 
-    public MyAstToJasmin(SymbolTable symbolTable){
+    public MyAstToJasmin(){
         this.jasminCode = new StringBuilder();
-        this.symbolTable = symbolTable;
         reports = new ArrayList<>();
 
+        addVisit("Program", this::programVisit);
         addVisit("ClassDeclaration", this::classDeclVisit);
         addVisit("MethodDeclaration", this::methodDeclVisit);
         addVisit("BinOp", this::binOpVisit);
@@ -32,12 +32,22 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
     @Override
     public JasminResult toJasmin(JmmSemanticsResult semanticsResult) {
         JmmNode rootNode = semanticsResult.getRootNode();
-
+        System.out.println(jasminCode.toString());
+        this.symbolTable = semanticsResult.getSymbolTable();
+        this.visit(rootNode);
         return new JasminResult(rootNode.getClass().getName(), jasminCode.toString(), reports);
+    }
+
+    private Integer programVisit(JmmNode program, Integer dummy) {
+        for (var child : program.getChildren()) {
+            visit(child);
+        }
+        return 0;
     }
 
     private Integer classDeclVisit(JmmNode classDecl, Integer dummy) {
         // CLASS
+        System.out.println(symbolTable);
         jasminCode.append(".class public ").append(symbolTable.getClassName()).append("\n");
         var superClass = symbolTable.getSuper();
         if (superClass != null) {
@@ -65,7 +75,7 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         }
         jasminCode.append("/<init>()V").append("\n");
         jasminCode.append("return").append("\n");
-        jasminCode.append(".end method");
+        jasminCode.append(".end method").append("\n");
 
         for (var child : classDecl.getChildren()) {
             visit(child);
@@ -93,12 +103,14 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
         jasminCode.append(AstToJasminReturn.getJasminType(symbolTable.getReturnType(methodSignature).getName())).append("\n");
 
-        jasminCode.append(".limit stack 99\n").append(".limit locals 2\n");
+        int localVars = symbolTable.getLocalVariables(methodSignature).size();
+
+        jasminCode.append(".limit stack 99\n").append(".limit locals ").append(localVars).append("\n");
 
         for (var child : methodDecl.getChildren()) {
             visit(child);
         }
-        jasminCode.append(".end method");
+        jasminCode.append(".end method").append("\n");
 
         return 0;
     }

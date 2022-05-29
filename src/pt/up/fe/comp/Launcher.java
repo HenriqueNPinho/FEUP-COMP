@@ -57,7 +57,8 @@ public class Launcher {
         TestUtils.noErrors(analysisResult.getReports());
 
         //  add remaining stages
-        JasminResult jasminResult = new MyAstToJasmin(analysisResult.getSymbolTable()).toJasmin(analysisResult);
+        MyAstToJasmin myAstToJasmin = new MyAstToJasmin();
+        JasminResult jasminResult = myAstToJasmin.toJasmin(analysisResult);
 
         TestUtils.noErrors(jasminResult.getReports());
 
