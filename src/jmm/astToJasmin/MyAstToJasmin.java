@@ -16,6 +16,9 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
     StringBuilder jasminCode;
     private SymbolTable symbolTable;
     List<Report> reports;
+    int currentStackSize = 0;
+    int maxStackSize = 0;
+    int varCounter = 0;
 
     public MyAstToJasmin(){
         this.jasminCode = new StringBuilder();
@@ -117,18 +120,16 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
     private Integer binOpVisit(JmmNode binOp, Integer dummy) {
         var op = binOp.get("op");
-        if (binOp.getJmmChild(0).getKind().equals("Id") && binOp.getJmmChild(1).getKind().equals("Id")){
-            jasminCode.append("iload_0\n").append("iload_0\n");
-            switch (op) {
-                case "add":
-                    jasminCode.append("iadd\n");
-                case "sub":
-                    jasminCode.append("isub\n");
-                case "mul":
-                    jasminCode.append("imul\n");
-                case "div":
-                    jasminCode.append("idiv\n");
-            }
+        jasminCode.append("iload_0\n").append("iload_0\n");
+        switch (op) {
+            case "add":
+                jasminCode.append("iadd\n");
+            case "sub":
+                jasminCode.append("isub\n");
+            case "mul":
+                jasminCode.append("imul\n");
+            case "div":
+                jasminCode.append("idiv\n");
         }
         return 0;
     }
