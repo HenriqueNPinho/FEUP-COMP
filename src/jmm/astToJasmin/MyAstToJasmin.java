@@ -9,7 +9,9 @@ import pt.up.fe.comp.jmm.jasmin.JasminResult;
 import pt.up.fe.comp.jmm.report.Report;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstToJasmin {
@@ -18,11 +20,12 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
     List<Report> reports;
     int currentStackSize = 0;
     int maxStackSize = 0;
-    int varCounter = 0;
+    Map<String, Integer> varRegisters;
 
     public MyAstToJasmin(){
         this.jasminCode = new StringBuilder();
         reports = new ArrayList<>();
+        varRegisters = new HashMap<>();
 
         addVisit("Program", this::programVisit);
         addVisit("ClassDeclaration", this::classDeclVisit);
@@ -108,11 +111,16 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
         int localVars = symbolTable.getLocalVariables(methodSignature).size();
 
-        jasminCode.append(".limit stack 99\n").append(".limit locals ").append(localVars).append("\n");
+        jasminCode.append(".limit stack 99\n").append(".limit locals ").append(localVars).append("\n"); // TODO: Stack size
 
         for (var child : methodDecl.getChildren()) {
             visit(child);
         }
+
+        if (methodSignature.equals("main")) {
+            jasminCode.append("return").append("\n");
+        }
+
         jasminCode.append(".end method").append("\n");
 
         return 0;
@@ -135,6 +143,9 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
     }
 
     private Integer returnExpVisit(JmmNode returnExp, Integer dummy) {
+        if (returnExp.getJmmChild(0).getKind().equals("IntLiteral")) {
+            jasminCode.append("iconst_").append(returnExp.getJmmChild(0).get("value")).append("\n");
+        }
         jasminCode.append("ireturn\n");
         return 0;
     }
