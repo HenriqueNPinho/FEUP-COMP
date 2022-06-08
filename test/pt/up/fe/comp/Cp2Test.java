@@ -384,4 +384,12 @@ public class Cp2Test {
                 assignInst.get().getTypeOfAssign().getTypeOfElement());
     }
 
+    @Test
+    public void BLA() {
+        var result = TestUtils
+                .analyse(SpecsIo.getResource("fixtures/public/cp2/bla.jmm"));
+        TestUtils.noErrors(result);
+    }
+
+
 }

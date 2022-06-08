@@ -15,9 +15,5 @@ class SymbolTable extends Quicksort {
 	
 	public boolean method2(int intParam1, boolean boolParam1) {
 		return boolParam1;
-	}	
-
-
-	public static void main(String[] args) {
 	}
 }

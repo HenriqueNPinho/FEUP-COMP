@@ -1,6 +1,8 @@
 package jmm.astToJasmin;
 
+import jmm.analysis.SymbolTableBuilder;
 import pt.up.fe.comp.jmm.analysis.JmmSemanticsResult;
+import pt.up.fe.comp.jmm.analysis.table.Symbol;
 import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
 import pt.up.fe.comp.jmm.ast.AJmmVisitor;
 import pt.up.fe.comp.jmm.ast.JmmNode;
@@ -20,12 +22,12 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
     List<Report> reports;
     int currentStackSize = 0;
     int maxStackSize = 0;
-    Map<String, Integer> varRegisters;
+    List<Symbol> varRegisters;
 
     public MyAstToJasmin(){
         this.jasminCode = new StringBuilder();
         reports = new ArrayList<>();
-        varRegisters = new HashMap<>();
+        varRegisters = new ArrayList<>();
 
         addVisit("Program", this::programVisit);
         addVisit("ClassDeclaration", this::classDeclVisit);
@@ -33,6 +35,26 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         addVisit("BinOp", this::binOpVisit);
         addVisit("ReturnExp", this::returnExpVisit);
         addVisit("Assignment", this::AssignVisit);
+    }
+
+    public String getVariableType(String varName, String methodName) {
+        if (symbolTable.getLocalVariables(methodName).isEmpty() && symbolTable.getParameters(methodName).isEmpty())
+            return "";
+        if (!symbolTable.getLocalVariables(methodName).isEmpty()) {
+            for (var symbol : symbolTable.getLocalVariables(methodName)) {
+                if (symbol.getName().equals(varName)) {
+                    return symbol.getType().getName();
+                }
+            }
+        }
+        if (!symbolTable.getParameters(methodName).isEmpty()) {
+            for (var symbol2 : symbolTable.getParameters(methodName)) {
+                if (symbol2.getName().equals(varName)) {
+                    return symbol2.getType().getName();
+                }
+            }
+        }
+        return "";
     }
 
     @Override
@@ -101,6 +123,12 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         jasminCode.append(methodSignature).append("(");
 
         var params = symbolTable.getParameters(methodSignature);
+        var localVars = symbolTable.getLocalVariables(methodSignature);
+
+        // ASSIGN REGISTERS
+        varRegisters.addAll(params);
+        varRegisters.addAll(localVars);
+
 
         var paramCode = params.stream().map(symbol -> AstToJasminParam.getCode(symbol.getType())).collect(Collectors.joining(""));
 
@@ -109,9 +137,9 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
         jasminCode.append(AstToJasminReturn.getJasminType(symbolTable.getReturnType(methodSignature).getName())).append("\n");
 
-        int localVars = symbolTable.getLocalVariables(methodSignature).size();
+        int localVarsSize = symbolTable.getLocalVariables(methodSignature).size();
 
-        jasminCode.append(".limit stack 99\n").append(".limit locals ").append(localVars).append("\n"); // TODO: Stack size
+        jasminCode.append(".limit stack 99\n").append(".limit locals ").append(localVarsSize).append("\n"); // TODO: Stack size
 
         for (var child : methodDecl.getChildren()) {
             visit(child);
@@ -143,10 +171,27 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
     }
 
     private Integer returnExpVisit(JmmNode returnExp, Integer dummy) {
+        var methodDecl = returnExp.getAncestor("MethodDeclaration").get().get("name");
         if (returnExp.getJmmChild(0).getKind().equals("IntLiteral")) {
             jasminCode.append("iconst_").append(returnExp.getJmmChild(0).get("value")).append("\n");
+            jasminCode.append("ireturn\n");
+            return 0;
         }
-        jasminCode.append("ireturn\n");
+
+        if (returnExp.getJmmChild(0).getKind().equals("Id")) {
+            var type = this.getVariableType(returnExp.getJmmChild(0).get("name"), methodDecl);
+            int register = 1000000;
+            for (int i = 0; i < this.varRegisters.size(); ++i) {
+                if (varRegisters.get(i).getName().equals(returnExp.getJmmChild(0).get("name"))) {
+                    register = i;
+                }
+            }
+            switch (type) {
+                case "boolean":
+                    jasminCode.append("bload_").append(Integer.toString(register)).append("\n");
+                    jasminCode.append("breturn\n");
+            }
+        }
         return 0;
     }
 
