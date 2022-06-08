@@ -9,6 +9,10 @@ class Fac extends Unii {
     int anotherNumber;
     int[] numArray;
     boolean isHappy;
+
+    public int bar() {
+        return 0;
+    }
     public int ComputeFac(int num) {
         int num_aux ;
         Uni uni;

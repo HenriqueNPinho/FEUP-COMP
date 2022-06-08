@@ -286,8 +286,17 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
     private Integer methodCallVisit(JmmNode methodCall, SymbolTableBuilder symbolTable) {
         String method = methodCall.getAncestor("MethodDeclaration").get().get("name");
         if (methodCall.getJmmChild(0).getKind().equals("Id")) {
-            var call = methodCall.getJmmChild(0); // TODO: CHECK IF METHOD AFTER THIS IS IN CLASS
+            var call = methodCall.getJmmChild(0);
             if (call.get("name").equals("this")) {
+                if (methodCall.getJmmChild(1).getKind().equals("Id")) { // CHECK IF METHOD AFTER THIS IS IN CLASS
+                    var callee = methodCall.getJmmChild(1).get("name");
+                    if (symbolTable.getMethods().contains(callee)) {
+                        return 0;
+                    }
+                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(methodCall.get("line")), Integer.parseInt(methodCall.get("col")), "method '" + callee + "' does not belong to class", null));
+                    return -1;
+
+                }
                 return 0;
             }
             boolean has = false;

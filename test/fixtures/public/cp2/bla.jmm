@@ -18,7 +18,7 @@ class Test {
 	}
 
 	public int bla() {
-	    this.cpd();
+	    this.bar();
 	    return 0;
 	}
  }
