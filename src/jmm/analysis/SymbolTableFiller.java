@@ -226,7 +226,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
             case "mult":
             case "div":
             case "lower":
-                if (binOp.getJmmChild(0).getKind().equals("IntLiteral") && binOp.getJmmChild(1).getKind().equals("IntLiteral")) {
+                if ((binOp.getJmmChild(0).getKind().equals("IntLiteral") && binOp.getJmmChild(1).getKind().equals("IntLiteral")) || (binOp.getJmmChild(0).getKind().equals("BinOp") && binOp.getJmmChild(1).getKind().equals("BinOp"))) {
                     return 0;
                 }
                 if (binOp.getJmmChild(0).getKind().equals("Id") && binOp.getJmmChild(1).getKind().equals("Id")) {
@@ -241,6 +241,21 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                         return 0;
                     }
                 }
+                if (binOp.getJmmChild(0).getKind().equals("BinOp")) {
+                    if (binOp.getJmmChild(1).getKind().equals("Id")) {
+                        if (symbolTable.getVariableType(binOp.getJmmChild(1).get("name"), method).equals("int")) {
+                            return 0;
+                        }
+                    }
+                    if (binOp.getJmmChild(1).getKind().equals("MethodCall")) {
+                        if (symbolTable.getReturnType(binOp.getJmmChild(1).getJmmChild(1).get("name")).getName().equals("int")) {
+                            return 0;
+                        }
+                    }
+                    if (binOp.getJmmChild(1).getKind().equals("IntLiteral")) {
+                        return 0;
+                    }
+                }
                 if (binOp.getJmmChild(0).getKind().equals("IntLiteral")) {
                     if (binOp.getJmmChild(1).getKind().equals("Id")) {
                         if (symbolTable.getVariableType(binOp.getJmmChild(1).get("name"), method).equals("int")) {
@@ -251,6 +266,9 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                         if (symbolTable.getReturnType(binOp.getJmmChild(1).getJmmChild(1).get("name")).getName().equals("int")) {
                             return 0;
                         }
+                    }
+                    if (binOp.getJmmChild(1).getKind().equals("BinOp")) {
+                        return 0;
                     }
                 }
                 if (binOp.getJmmChild(0).getKind().equals("Id")) {
@@ -264,6 +282,9 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                             return 0;
                         }
                     }
+                    if (binOp.getJmmChild(1).getKind().equals("BinOp")) {
+                        return 0;
+                    }
                 }
                 if (binOp.getJmmChild(0).getKind().equals("MethodCall")) {
                     if (binOp.getJmmChild(1).getKind().equals("IntLiteral")) {
@@ -275,6 +296,9 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                         if (symbolTable.getReturnType(binOp.getJmmChild(0).getJmmChild(1).get("name")).getName().equals("int") && symbolTable.getVariableType(binOp.getJmmChild(1).get("value"), method).equals("int")) {
                             return 0;
                         }
+                    }
+                    if (binOp.getJmmChild(1).getKind().equals("BinOp")) {
+                        return 0;
                     }
                 }
                 reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(binOp.get("line")), Integer.parseInt(binOp.get("col")), "You can only add/sub/div/mult/lower int values", null));
