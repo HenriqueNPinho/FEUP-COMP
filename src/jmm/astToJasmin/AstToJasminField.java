@@ -27,7 +27,7 @@ public class AstToJasminField {
             case "int":
                 return "I";
             case "boolean":
-                return "B";
+                return "Z";
             default:
                 return jmmType;
         }

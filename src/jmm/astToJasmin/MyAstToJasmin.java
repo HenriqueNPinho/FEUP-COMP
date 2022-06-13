@@ -11,9 +11,7 @@ import pt.up.fe.comp.jmm.jasmin.JasminResult;
 import pt.up.fe.comp.jmm.report.Report;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstToJasmin {
@@ -89,6 +87,7 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         if (classDecl.getJmmChild(1).getKind().equals("VarDeclaration")) {
             for (var field : symbolTable.getFields()) {
                 jasminCode.append(".field public ").append(AstToJasminField.getCode(field)).append("\n");
+                //varRegisters.add(field);
             }
         }
 
@@ -114,7 +113,7 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
     private Integer methodDeclVisit(JmmNode methodDecl, Integer dummy) {
         var methodSignature = methodDecl.get("name");
-        boolean isStatic = Boolean.parseBoolean(methodDecl.getOptional("static").toString());
+        boolean isStatic = methodDecl.getOptional("static").isPresent();
 
         jasminCode.append(".method public ");
         if (isStatic) {
@@ -129,7 +128,6 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         varRegisters.addAll(params);
         varRegisters.addAll(localVars);
 
-
         var paramCode = params.stream().map(symbol -> AstToJasminParam.getCode(symbol.getType())).collect(Collectors.joining(""));
 
         jasminCode.append(paramCode);
@@ -137,7 +135,7 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
         jasminCode.append(AstToJasminReturn.getJasminType(symbolTable.getReturnType(methodSignature).getName())).append("\n");
 
-        int localVarsSize = symbolTable.getLocalVariables(methodSignature).size();
+        int localVarsSize = localVars.size() + params.size() + 1;
 
         jasminCode.append(".limit stack 99\n").append(".limit locals ").append(localVarsSize).append("\n"); // TODO: Stack size
 
@@ -150,6 +148,8 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         }
 
         jasminCode.append(".end method").append("\n");
+
+        varRegisters.clear();
 
         return 0;
     }
@@ -188,8 +188,9 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
             }
             switch (type) {
                 case "boolean":
-                    jasminCode.append("bload_").append(Integer.toString(register)).append("\n");
-                    jasminCode.append("breturn\n");
+                case "int":
+                    jasminCode.append("iload_").append(Integer.toString(register + 1)).append("\n");
+                    jasminCode.append("ireturn\n");
             }
         }
         return 0;

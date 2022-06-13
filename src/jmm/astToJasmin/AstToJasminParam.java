@@ -28,7 +28,7 @@ public class AstToJasminParam {
             case "string array":
                 return "Ljava/lang/String";
             case "boolean":
-                return "B";
+                return "Z";
             default:
                 return jmmType;
         }
