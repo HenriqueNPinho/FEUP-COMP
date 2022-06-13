@@ -4,6 +4,7 @@ import jmm.analysis.SymbolTableBuilder;
 import pt.up.fe.comp.jmm.analysis.JmmSemanticsResult;
 import pt.up.fe.comp.jmm.analysis.table.Symbol;
 import pt.up.fe.comp.jmm.analysis.table.SymbolTable;
+import pt.up.fe.comp.jmm.analysis.table.Type;
 import pt.up.fe.comp.jmm.ast.AJmmVisitor;
 import pt.up.fe.comp.jmm.ast.JmmNode;
 import pt.up.fe.comp.jmm.ast2jasmin.AstToJasmin;
@@ -128,6 +129,9 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         var localVars = symbolTable.getLocalVariables(methodSignature);
 
         // ASSIGN REGISTERS
+        Type thisType = new Type(symbolTable.getClassName(), false);
+        Symbol thisSymbol = new Symbol(thisType, "this");
+        varRegisters.add(thisSymbol);
         varRegisters.addAll(params);
         varRegisters.addAll(localVars);
 
@@ -279,7 +283,17 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
                     register = i;
                 }
             }
-            jasminCode.append("iload_").append(register).append("\n");
+            var type = getVariableType(argument.get("name"), method);
+            switch (type) {
+                case "int":
+                case "boolean":
+                    jasminCode.append("iload_").append(register).append("\n");
+                    break;
+                case "integer array":
+                case "string array":
+                    jasminCode.append("aload_").append(register).append("\n");
+                    break;
+            }
         }
 
         jasminCode.append("invokestatic ").append(caller).append("/").append(callee).append("(");
@@ -292,8 +306,11 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
                 case "boolean":
                     jasminCode.append("Z");
                     break;
-                case "int array":
-                    jasminCode.append("[I;");
+                case "integer array":
+                    jasminCode.append("[I");
+                    break;
+                case "string array":
+                    jasminCode.append("[Ljava/lang/String;");
                     break;
             }
         }
