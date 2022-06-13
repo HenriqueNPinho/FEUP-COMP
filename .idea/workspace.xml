@@ -7,10 +7,7 @@
     <list default="true" id="e0bff920-19fa-4cbd-af10-d5ed972bf4a3" name="Changes" comment="update">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/libs/javacc-full.jar" beforeDir="false" afterPath="$PROJECT_DIR$/libs/javacc-full.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/jmm/analysis/SymbolTableFiller.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/jmm/analysis/SymbolTableFiller.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/jmm/astToJasmin/MyAstToJasmin.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/jmm/astToJasmin/MyAstToJasmin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/ExampleTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/test/ExampleTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/public/cp2/CompileArithmetic.jmm" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/public/cp2/CompileArithmetic.jmm" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,6 +79,8 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/henrique/Desktop/UniExample/UNI_App&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
@@ -95,20 +94,7 @@
       <recent name="$PROJECT_DIR$/test/fixtures/public" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.ExampleTest.testJasmin">
-    <configuration name="MainAnalysis" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="pt.up.fe.comp.MainAnalysis" />
-      <module name="comp2022-5d.main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="pt.up.fe.comp.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RunManager" selected="Gradle.Cp2Test.test_2_04_CompileAssignment">
     <configuration name="Cp2Test" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -155,6 +141,52 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
+    <configuration name="Cp2Test.test_2_03_CompileMethodInvocation" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;pt.up.fe.comp.Cp2Test.test_2_03_CompileMethodInvocation&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
+    <configuration name="Cp2Test.test_2_04_CompileAssignment" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;pt.up.fe.comp.Cp2Test.test_2_04_CompileAssignment&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <method v="2" />
+    </configuration>
     <configuration name="ExampleTest.testJasmin" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -178,36 +210,13 @@
       <DebugAllEnabled>false</DebugAllEnabled>
       <method v="2" />
     </configuration>
-    <configuration name="GrammarTest.testExprTrue" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;pt.up.fe.comp.GrammarTest.testExprTrue&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Gradle.Cp2Test.test_2_04_CompileAssignment" />
+        <item itemvalue="Gradle.Cp2Test.test_2_03_CompileMethodInvocation" />
+        <item itemvalue="Gradle.Cp2Test.test_2_02_CompileArithmetic" />
         <item itemvalue="Gradle.ExampleTest.testJasmin" />
         <item itemvalue="Gradle.Cp2Test" />
-        <item itemvalue="Gradle.Cp2Test.test_2_02_CompileArithmetic" />
-        <item itemvalue="Gradle.GrammarTest.testExprTrue" />
-        <item itemvalue="Application.MainAnalysis" />
       </list>
     </recent_temporary>
   </component>

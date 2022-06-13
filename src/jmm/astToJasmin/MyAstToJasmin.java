@@ -236,6 +236,15 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
                 if (assign.getJmmChild(0).getKind().equals("IntLiteral")) {
                     jasminCode.append("iconst_").append(assign.getJmmChild(0).get("value")).append("\n");
                 }
+                else if (assign.getJmmChild(0).getKind().equals("Id")) {
+                    int aux=0;
+                    for (int i = 0; i < this.varRegisters.size(); ++i) {
+                        if (varRegisters.get(i).getName().equals(assign.getJmmChild(0).get("name"))) {
+                           aux = i;
+                        }
+                    }
+                    jasminCode.append("iload_").append(aux).append("\n");
+                }
                 jasminCode.append("istore_").append(register).append("\n");
         }
         return 0;
