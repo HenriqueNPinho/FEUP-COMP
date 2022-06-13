@@ -34,6 +34,8 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         addVisit("ReturnExp", this::returnExpVisit);
         addVisit("VarDeclaration", this::varDeclVisit);
         addVisit("Assignment", this::assignVisit);
+        addVisit("StatementExpression", this::stmtExpVisit);
+        addVisit("MethodCall", this::methodCallVisit);
     }
 
     public String getVariableType(String varName, String methodName) {
@@ -189,6 +191,9 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
     private Integer returnExpVisit(JmmNode returnExp, Integer dummy) {
         var methodDecl = returnExp.getAncestor("MethodDeclaration").get().get("name");
         if (returnExp.getJmmChild(0).getKind().equals("IntLiteral")) {
+            if (Integer.parseInt(returnExp.getJmmChild(0).get("value")) > 5 || Integer.parseInt(returnExp.getJmmChild(0).get("value")) < -1){
+                jasminCode.append("bipush ").append(returnExp.getJmmChild(0).get("value")).append("\n");
+            }
             jasminCode.append("iconst_").append(returnExp.getJmmChild(0).get("value")).append("\n");
             jasminCode.append("ireturn\n");
             return 0;
@@ -234,10 +239,56 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
             case "boolean":
             case "int":
                 if (assign.getJmmChild(0).getKind().equals("IntLiteral")) {
-                    jasminCode.append("iconst_").append(assign.getJmmChild(0).get("value")).append("\n");
+                    if (Integer.parseInt(assign.getJmmChild(0).get("value")) > 5 || Integer.parseInt(assign.getJmmChild(0).get("value")) < -1){
+                        jasminCode.append("bipush ").append(assign.getJmmChild(0).get("value")).append("\n");
+                    }
+                    else
+                        jasminCode.append("iconst_").append(assign.getJmmChild(0).get("value")).append("\n");
                 }
                 jasminCode.append("istore_").append(register).append("\n");
         }
+        return 0;
+    }
+
+    private Integer stmtExpVisit(JmmNode stmtExp, Integer dummy){
+        for (var child : stmtExp.getChildren()) {
+            visit(child);
+        }
+        return 0;
+    }
+
+    private Integer methodCallVisit(JmmNode methodCall, Integer dummy) {
+        var method = methodCall.getAncestor("MethodDeclaration").get().get("name");
+        var caller = methodCall.getJmmChild(0).get("name");
+        var callee = methodCall.getJmmChild(1).get("name");
+        var arguments = methodCall.getJmmChild(2);
+
+        for (var argument : arguments.getChildren()) {
+            var register = -1;
+            for (int i = 0; i < this.varRegisters.size(); ++i) {
+                if (varRegisters.get(i).getName().equals(argument.get("name"))) {
+                    register = i;
+                }
+            }
+            jasminCode.append("iload_").append(register).append("\n");
+        }
+
+        jasminCode.append("invokestatic ").append(caller).append("/").append(callee).append("(");
+        for (var argument : arguments.getChildren()) {
+            var type = getVariableType(argument.get("name"), method);
+            switch (type) {
+                case "int":
+                    jasminCode.append("I");
+                    break;
+                case "boolean":
+                    jasminCode.append("Z");
+                    break;
+                case "int array":
+                    jasminCode.append("[I;");
+                    break;
+            }
+        }
+        jasminCode.append(")V").append("\n");
         return 0;
     }
 
