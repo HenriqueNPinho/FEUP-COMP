@@ -13,10 +13,6 @@ public class AstToJasminParam {
 
         code.append(getJasminType(type.getName()));
 
-        if (type.isArray()) {
-            code.append(";");
-        }
-
         return code.toString();
     }
 
@@ -26,7 +22,7 @@ public class AstToJasminParam {
             case "int":
                 return "I";
             case "string array":
-                return "Ljava/lang/String";
+                return "Ljava/lang/String;";
             case "boolean":
                 return "Z";
             default:
