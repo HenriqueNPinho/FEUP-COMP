@@ -32,7 +32,8 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         addVisit("MethodDeclaration", this::methodDeclVisit);
         addVisit("BinOp", this::binOpVisit);
         addVisit("ReturnExp", this::returnExpVisit);
-        addVisit("Assignment", this::AssignVisit);
+        addVisit("VarDeclaration", this::varDeclVisit);
+        addVisit("Assignment", this::assignVisit);
     }
 
     public String getVariableType(String varName, String methodName) {
@@ -156,16 +157,31 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
     private Integer binOpVisit(JmmNode binOp, Integer dummy) {
         var op = binOp.get("op");
-        jasminCode.append("iload_0\n").append("iload_0\n");
+        int register1 = -1;
+        int register2 = -1;
+        for (int i = 0; i < this.varRegisters.size(); ++i) {
+            if (varRegisters.get(i).getName().equals(binOp.getJmmChild(0).get("name"))) {
+                register1 = i;
+            }
+            if (varRegisters.get(i).getName().equals(binOp.getJmmChild(1).get("name"))) {
+                register2 = i;
+            }
+        }
+        jasminCode.append("iload_").append(Integer.toString(register1)).append("\n");
+        jasminCode.append("iload_").append(Integer.toString(register2)).append("\n");
         switch (op) {
             case "add":
                 jasminCode.append("iadd\n");
+                break;
             case "sub":
                 jasminCode.append("isub\n");
+                break;
             case "mul":
                 jasminCode.append("imul\n");
+                break;
             case "div":
                 jasminCode.append("idiv\n");
+                break;
         }
         return 0;
     }
@@ -180,7 +196,7 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
         if (returnExp.getJmmChild(0).getKind().equals("Id")) {
             var type = this.getVariableType(returnExp.getJmmChild(0).get("name"), methodDecl);
-            int register = 1000000;
+            int register = -1;
             for (int i = 0; i < this.varRegisters.size(); ++i) {
                 if (varRegisters.get(i).getName().equals(returnExp.getJmmChild(0).get("name"))) {
                     register = i;
@@ -189,14 +205,43 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
             switch (type) {
                 case "boolean":
                 case "int":
-                    jasminCode.append("iload_").append(Integer.toString(register + 1)).append("\n");
+                    jasminCode.append("iload_").append(register).append("\n");
                     jasminCode.append("ireturn\n");
             }
+            return 0;
+        }
+
+        visit(returnExp.getJmmChild(0));
+
+        if (returnExp.getJmmChild(0).getKind().equals("BinOp")) {
+            jasminCode.append("ireturn\n");
         }
         return 0;
     }
 
-    private Integer AssignVisit(JmmNode assign, Integer dummy){
+    private Integer assignVisit(JmmNode assign, Integer dummy){
+        var method = assign.getAncestor("MethodDeclaration").get().get("name");
+        var name = assign.get("name");
+        var type = this.getVariableType(name, method);
+        int register = -1;
+        for (int i = 0; i < this.varRegisters.size(); ++i) {
+            if (varRegisters.get(i).getName().equals(name)) {
+                register = i;
+            }
+        }
+
+        switch (type) {
+            case "boolean":
+            case "int":
+                if (assign.getJmmChild(0).getKind().equals("IntLiteral")) {
+                    jasminCode.append("iconst_").append(assign.getJmmChild(0).get("value")).append("\n");
+                }
+                jasminCode.append("istore_").append(register).append("\n");
+        }
+        return 0;
+    }
+
+    private Integer varDeclVisit(JmmNode varDecl, Integer dummy){
         return 0;
     }
 }
