@@ -69,10 +69,15 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         if (classDecl.getJmmChild(1).getKind().equals("VarDeclaration")) {
             var fieldNames = classDecl.getJmmChild(1).getChildren().stream().map(id -> id.get("name")).collect(Collectors.toList());
             var fieldTypes = classDecl.getJmmChild(1).getChildren().stream().map(id -> id.get("type")).collect(Collectors.toList());
-            List<Symbol> symbols = new ArrayList<>();
             for (int i = 0; i < fieldNames.size(); ++i) {
                 Type type = new Type(fieldTypes.get(i), fieldTypes.get(i).equals("integer array") || fieldTypes.get(i).equals("string array"));
                 Symbol symbol = new Symbol(type, fieldNames.get(i));
+                for (var alreadyField : symbolTable.getFields()) {
+                    if (alreadyField.getName().equals(symbol.getName())) {
+                        reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(classDecl.get("line")), Integer.parseInt(classDecl.get("col")), "Found duplicated field with name '" + symbol.getName()+ "'", null));
+                        return -1;
+                    }
+                }
                 symbolTable.addField(symbol);
             }
         }
@@ -104,6 +109,12 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         for (int i = 0; i < paramName.size(); ++i) {
             Type type = new Type(paramType.get(i), paramType.get(i).equals("integer array") || paramType.get(i).equals("string array"));
             Symbol symbol = new Symbol(type, paramName.get(i));
+            for (var alreadySymbol : symbols) {
+                if (alreadySymbol.getName().equals(symbol.getName())) {
+                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(parameters.get("line")), Integer.parseInt(parameters.get("col")), "Found duplicated parameter with name '" + symbol.getName() + "'", null));
+                    return -1;
+                }
+            }
             symbols.add(symbol);
         }
         symbolTable.addParameters(parameters.getJmmParent().get("name"), symbols);
@@ -144,13 +155,6 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                     }
                 }
             }
-            /*
-            for (var field : symbolTable.getFields()) {
-                if (field.getName().equals(symbol.getName())) {
-                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(varDecl.get("line")), Integer.parseInt(varDecl.get("col")), "Found variable '" + symbol.getName() + "' with same name as field", null));
-                    return -1;
-                }
-            }*/
             for (var param : symbolTable.getParameters(method)) {
                 if (param.getName().equals(symbol.getName())) {
                     reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(varDecl.get("line")), Integer.parseInt(varDecl.get("col")), "Found variable '" + symbol.getName() + "' with same name as param", null));
@@ -386,7 +390,6 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
     }
 
     private Integer arrayAccessVisit(JmmNode arrayAccess, SymbolTableBuilder symbolTable) {
-        // TODO: probably needs more cases
         var array = arrayAccess.getJmmChild(0);
         var access = arrayAccess.getJmmChild(1);
         var method = arrayAccess.getAncestor("MethodDeclaration").get().get("name");
