@@ -114,6 +114,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         if (varDecl.getJmmParent().getKind().equals("ClassDeclaration")) {
             return -1;
         }
+        var method =  varDecl.getAncestor("MethodDeclaration").get().get("name");
         var varName = varDecl.getChildren().stream().map(id -> id.get("name")).collect(Collectors.toList());
         var varType = varDecl.getChildren().stream().map(id -> id.get("type")).collect(Collectors.toList());
         List<Symbol> symbols = new ArrayList<>();
@@ -143,9 +144,22 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                     }
                 }
             }
+            /*
+            for (var field : symbolTable.getFields()) {
+                if (field.getName().equals(symbol.getName())) {
+                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(varDecl.get("line")), Integer.parseInt(varDecl.get("col")), "Found variable '" + symbol.getName() + "' with same name as field", null));
+                    return -1;
+                }
+            }*/
+            for (var param : symbolTable.getParameters(method)) {
+                if (param.getName().equals(symbol.getName())) {
+                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(varDecl.get("line")), Integer.parseInt(varDecl.get("col")), "Found variable '" + symbol.getName() + "' with same name as param", null));
+                    return -1;
+                }
+            }
             symbols.add(symbol);
         }
-        symbolTable.addLocalVariables(varDecl.getAncestor("MethodDeclaration").get().get("name"), symbols);
+        symbolTable.addLocalVariables(method, symbols);
         return 0;
     }
 
@@ -396,6 +410,14 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
     private Integer assignmentVisit(JmmNode assignment, SymbolTableBuilder symbolTable) {
         var name = assignment.get("name");
         var method = assignment.getAncestor("MethodDeclaration").get().get("name");
+        if (assignment.getAncestor("MethodDeclaration").get().getOptional("static").isPresent()) {
+            for (var field : symbolTable.getFields()) {
+                if (field.getName().equals(name) && !symbolTable.methodHasParam(method, name) && !symbolTable.methodHasVar(method, name)) {
+                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(assignment.get("line")), Integer.parseInt(assignment.get("col")), "can not access fields in static method", null));
+                    return -1;
+                }
+            }
+        }
         if (symbolTable.getVariableType(name, method).equals("")) {
             reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(assignment.get("line")), Integer.parseInt(assignment.get("col")), "variable '" + name + "' has not been declared", null));
             return -1;

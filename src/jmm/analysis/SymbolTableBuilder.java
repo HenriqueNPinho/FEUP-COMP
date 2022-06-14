@@ -108,7 +108,7 @@ public class SymbolTableBuilder implements SymbolTable {
     }
 
     public String getVariableType(String varName, String methodName) {
-        if (localVariables.isEmpty() && methodParams.isEmpty())
+        if (localVariables.isEmpty() && methodParams.isEmpty() && fields.isEmpty())
                 return "";
         if (!localVariables.isEmpty()) {
             for (var symbol : localVariables.get(methodName)) {
@@ -124,6 +124,31 @@ public class SymbolTableBuilder implements SymbolTable {
                 }
             }
         }
+        if (!fields.isEmpty()) {
+            for (var symbol3 : getFields()) {
+                if (symbol3.getName().equals(varName)) {
+                    return symbol3.getType().getName();
+                }
+            }
+        }
         return "";
+    }
+
+    public boolean methodHasParam(String method, String param) {
+        for (var parameter : getParameters(method)) {
+            if (parameter.getName().equals(param)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean methodHasVar(String method, String variable) {
+        for (var parameter : getLocalVariables(method)) {
+            if (parameter.getName().equals(variable)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

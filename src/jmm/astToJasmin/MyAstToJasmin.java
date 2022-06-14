@@ -40,7 +40,7 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
     }
 
     public String getVariableType(String varName, String methodName) {
-        if (symbolTable.getLocalVariables(methodName).isEmpty() && symbolTable.getParameters(methodName).isEmpty())
+        if (symbolTable.getLocalVariables(methodName).isEmpty() && symbolTable.getParameters(methodName).isEmpty() && symbolTable.getFields().isEmpty())
             return "";
         if (!symbolTable.getLocalVariables(methodName).isEmpty()) {
             for (var symbol : symbolTable.getLocalVariables(methodName)) {
@@ -56,7 +56,32 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
                 }
             }
         }
+        if (!symbolTable.getFields().isEmpty()) {
+            for (var symbol3 : symbolTable.getFields()) {
+                if (symbol3.getName().equals(varName)) {
+                    return symbol3.getType().getName();
+                }
+            }
+        }
         return "";
+    }
+
+    public boolean methodHasParam(String method, String param) {
+        for (var parameter : symbolTable.getParameters(method)) {
+            if (parameter.getName().equals(param)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean methodHasVar(String method, String variable) {
+        for (var parameter : symbolTable.getLocalVariables(method)) {
+            if (parameter.getName().equals(variable)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -275,6 +300,17 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         var method = assign.getAncestor("MethodDeclaration").get().get("name");
         var name = assign.get("name");
         var type = this.getVariableType(name, method);
+        System.out.println(type);
+        for (var field : symbolTable.getFields()) {
+            if (field.getName().equals(name) && !methodHasParam(method, name) && !methodHasVar(method, name)) {
+                if (assign.getJmmChild(0).getKind().equals("IntLiteral")) {
+                    jasminCode.append("bipush ").append(assign.getJmmChild(0).get("value")).append("\n");
+                    Type type1 = new Type(type, type.equals("string array") || type.equals("int array"));
+                    Symbol symbol = new Symbol(type1, name);
+                    jasminCode.append("putpublic fields/").append(AstToJasminField.getCode(symbol));
+                }
+            }
+        }
         int register = -1;
         for (int i = 0; i < this.varRegisters.size(); ++i) {
             if (varRegisters.get(i).getName().equals(name)) {
