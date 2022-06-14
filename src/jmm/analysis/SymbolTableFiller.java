@@ -478,7 +478,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                     return -1;
                 }
             }
-            if (arguments.getJmmChild(i).getKind().equals("IntLiteral")) {
+            if (arguments.getJmmChild(i).getKind().equals("IntLiteral") || arguments.getJmmChild(i).getKind().equals("BinOp")) {
                 if (!symbolTable.getParameters(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")).get(i).getType().getName().equals("int")) {
                     reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arguments.get("line")), Integer.parseInt(arguments.get("col")), "argument of type int does not match with param", null));
                     return -1;

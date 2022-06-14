@@ -217,7 +217,6 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         }
 
         // missing binOp-Id, intLiteral-Id
-        System.out.println(op);
         switch (op) {
             case "add":
                 jasminCode.append("iadd\n");
@@ -225,7 +224,7 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
             case "sub":
                 jasminCode.append("isub\n");
                 break;
-            case "mul":
+            case "mult":
                 jasminCode.append("imul\n");
                 break;
             case "div":
