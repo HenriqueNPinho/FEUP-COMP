@@ -170,21 +170,21 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         }
 
         else if (binOp.getJmmChild(0).getKind().equals("IntLiteral") && binOp.getJmmChild(1).getKind().equals("BinOp")) {
+            visit(binOp.getJmmChild(1));
             if (Integer.parseInt(binOp.getJmmChild(0).get("value")) > 5 || Integer.parseInt(binOp.getJmmChild(0).get("value")) < -1){
                 jasminCode.append("bipush ").append(binOp.getJmmChild(0).get("value")).append("\n");
             } else {
                 jasminCode.append("iconst_").append(binOp.getJmmChild(0).get("value")).append("\n");
             }
-            visit(binOp.getJmmChild(1));
         }
 
         else if (binOp.getJmmChild(1).getKind().equals("IntLiteral") && binOp.getJmmChild(0).getKind().equals("BinOp")) {
+            visit(binOp.getJmmChild(0));
             if (Integer.parseInt(binOp.getJmmChild(1).get("value")) > 5 || Integer.parseInt(binOp.getJmmChild(1).get("value")) < -1){
                 jasminCode.append("bipush ").append(binOp.getJmmChild(1).get("value")).append("\n");
             } else {
                 jasminCode.append("iconst_").append(binOp.getJmmChild(1).get("value")).append("\n");
             }
-            visit(binOp.getJmmChild(0));
         }
 
         else if (binOp.getJmmChild(0).getKind().equals("Id") && binOp.getJmmChild(1).getKind().equals("Id")) {
@@ -217,7 +217,7 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         }
 
         // missing binOp-Id, intLiteral-Id
-
+        System.out.println(op);
         switch (op) {
             case "add":
                 jasminCode.append("iadd\n");

@@ -451,9 +451,26 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
 
     private Integer argumentsVisit(JmmNode arguments, SymbolTableBuilder symbolTable) {
         var method = arguments.getAncestor("MethodDeclaration").get().get("name");
-        if (symbolTable.getParameters(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")).isEmpty()) {
+        if (symbolTable.getMethods().contains(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")) && symbolTable.getParameters(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")).isEmpty()) {
             return 0;
         }
+
+        if (arguments.getNumChildren() == 0) {
+            return 0;
+        }
+
+        if (!symbolTable.getMethods().contains(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name"))) {
+            for (int i = 0; i < arguments.getNumChildren(); ++i) {
+                if (arguments.getJmmChild(i).getKind().equals("Id")) {
+                    if (symbolTable.getVariableType(arguments.getJmmChild(i).get("name"), method).equals("")) {
+                        reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arguments.get("line")), Integer.parseInt(arguments.get("col")), "argument '" + arguments.getJmmChild(i).get("name") + "' does not exist", null));
+                        return -1;
+                    }
+                }
+            }
+            return 0;
+        }
+
         for (int i = 0; i < arguments.getNumChildren(); ++i) {
             if (arguments.getJmmChild(i).getKind().equals("Id")) {
                 if (!symbolTable.getVariableType(arguments.getJmmChild(i).get("name"), method).equals(symbolTable.getParameters(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")).get(i).getType().getName())) {
