@@ -17,6 +17,17 @@ We've implemented a compiler of Java-- language to Java bytecodes. This compiler
 
 **SEMANTIC ANALYSIS:**
 
+Semantic rules implemented:
+
+- Type verifications in expressions:
+
+    - Operands must have the same type;
+    - It is not possible to use arrays directly in arithmetic operations;
+    - The array index on an array access must be an integer;
+
+- Method Verifications:
+
+
 
 **CODE GENERATION:**
 
@@ -28,5 +39,5 @@ We've implemented a compiler of Java-- language to Java bytecodes. This compiler
 
 **CONS:**
 
-Time was too short for the size of the project, plus we had to deal with half the team giving up.
-So until they said they quit, we had to work for 4, which delayed everything.
+Time was too short for the size of the project, plus we had to deal with half the team giving up, until they said they quit, we had to work for 4, which delayed everything.
+So some features were not implemented.
