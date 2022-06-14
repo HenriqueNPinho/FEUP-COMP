@@ -396,6 +396,10 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
     private Integer assignmentVisit(JmmNode assignment, SymbolTableBuilder symbolTable) {
         var name = assignment.get("name");
         var method = assignment.getAncestor("MethodDeclaration").get().get("name");
+        if (symbolTable.getVariableType(name, method).equals("")) {
+            reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(assignment.get("line")), Integer.parseInt(assignment.get("col")), "variable '" + name + "' has not been declared", null));
+            return -1;
+        }
         if (assignment.getJmmChild(0).getKind().equals("IntLiteral")) {
             if (!symbolTable.getVariableType(name, method).equals("int")) {
                 reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(assignment.get("line")), Integer.parseInt(assignment.get("col")), "can not assign '" + symbolTable.getVariableType(name, method) + "' to int", null));
@@ -404,6 +408,10 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         }
         if (assignment.getJmmChild(0).getKind().equals("Id")) {
             var name2 = assignment.getJmmChild(0).get("name");
+            if (symbolTable.getVariableType(name2, method).equals("")) {
+                reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(assignment.get("line")), Integer.parseInt(assignment.get("col")), "variable '" + name2 + "' has not been declared", null));
+                return -1;
+            }
             if (symbolTable.getVariableType(name2, method).equals(symbolTable.getClassName()) &&
                     symbolTable.getVariableType(name, method).equals(symbolTable.getSuper())) {
                 return 0;
@@ -450,6 +458,12 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
             if (arguments.getJmmChild(i).getKind().equals("Id")) {
                 if (!symbolTable.getVariableType(arguments.getJmmChild(i).get("name"), method).equals(symbolTable.getParameters(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")).get(i).getType().getName())) {
                     reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arguments.get("line")), Integer.parseInt(arguments.get("col")), "argument of type '" + symbolTable.getVariableType(arguments.getJmmChild(i).get("name"), method) + "' does not match with param", null));
+                    return -1;
+                }
+            }
+            if (arguments.getJmmChild(i).getKind().equals("IntLiteral")) {
+                if (!symbolTable.getParameters(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")).get(i).getType().getName().equals("int")) {
+                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arguments.get("line")), Integer.parseInt(arguments.get("col")), "argument of type int does not match with param", null));
                     return -1;
                 }
             }

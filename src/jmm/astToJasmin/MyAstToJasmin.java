@@ -142,7 +142,7 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
         jasminCode.append(AstToJasminReturn.getJasminType(symbolTable.getReturnType(methodSignature).getName())).append("\n");
 
-        int localVarsSize = localVars.size() + params.size() + 1;
+        int localVarsSize = varRegisters.size();
 
         jasminCode.append(".limit stack 99\n").append(".limit locals ").append(localVarsSize).append("\n"); // TODO: Stack size
 
@@ -163,18 +163,61 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
     private Integer binOpVisit(JmmNode binOp, Integer dummy) {
         var op = binOp.get("op");
-        int register1 = -1;
-        int register2 = -1;
-        for (int i = 0; i < this.varRegisters.size(); ++i) {
-            if (varRegisters.get(i).getName().equals(binOp.getJmmChild(0).get("name"))) {
-                register1 = i;
+
+        if (binOp.getJmmChild(0).getKind().equals("BinOp") && binOp.getJmmChild(1).getKind().equals("BinOp")) {
+            visit(binOp.getJmmChild(0));
+            visit(binOp.getJmmChild(1));
+        }
+
+        else if (binOp.getJmmChild(0).getKind().equals("IntLiteral") && binOp.getJmmChild(1).getKind().equals("BinOp")) {
+            if (Integer.parseInt(binOp.getJmmChild(0).get("value")) > 5 || Integer.parseInt(binOp.getJmmChild(0).get("value")) < -1){
+                jasminCode.append("bipush ").append(binOp.getJmmChild(0).get("value")).append("\n");
+            } else {
+                jasminCode.append("iconst_").append(binOp.getJmmChild(0).get("value")).append("\n");
             }
-            if (varRegisters.get(i).getName().equals(binOp.getJmmChild(1).get("name"))) {
-                register2 = i;
+            visit(binOp.getJmmChild(1));
+        }
+
+        else if (binOp.getJmmChild(1).getKind().equals("IntLiteral") && binOp.getJmmChild(0).getKind().equals("BinOp")) {
+            if (Integer.parseInt(binOp.getJmmChild(1).get("value")) > 5 || Integer.parseInt(binOp.getJmmChild(1).get("value")) < -1){
+                jasminCode.append("bipush ").append(binOp.getJmmChild(1).get("value")).append("\n");
+            } else {
+                jasminCode.append("iconst_").append(binOp.getJmmChild(1).get("value")).append("\n");
+            }
+            visit(binOp.getJmmChild(0));
+        }
+
+        else if (binOp.getJmmChild(0).getKind().equals("Id") && binOp.getJmmChild(1).getKind().equals("Id")) {
+            int register1 = -1;
+            int register2 = -1;
+            for (int i = 0; i < this.varRegisters.size(); ++i) {
+                if (varRegisters.get(i).getName().equals(binOp.getJmmChild(0).get("name"))) {
+                    register1 = i;
+                }
+                if (varRegisters.get(i).getName().equals(binOp.getJmmChild(1).get("name"))) {
+                    register2 = i;
+                }
+            }
+            jasminCode.append("iload_").append(Integer.toString(register1)).append("\n");
+            jasminCode.append("iload_").append(Integer.toString(register2)).append("\n");
+        }
+
+        else if (binOp.getJmmChild(0).getKind().equals("IntLiteral") && binOp.getJmmChild(1).getKind().equals("IntLiteral")) {
+            if (Integer.parseInt(binOp.getJmmChild(0).get("value")) > 5 || Integer.parseInt(binOp.getJmmChild(0).get("value")) < -1){
+                jasminCode.append("bipush ").append(binOp.getJmmChild(0).get("value")).append("\n");
+            } else {
+                jasminCode.append("iconst_").append(binOp.getJmmChild(0).get("value")).append("\n");
+            }
+
+            if (Integer.parseInt(binOp.getJmmChild(1).get("value")) > 5 || Integer.parseInt(binOp.getJmmChild(1).get("value")) < -1){
+                jasminCode.append("bipush ").append(binOp.getJmmChild(1).get("value")).append("\n");
+            } else {
+                jasminCode.append("iconst_").append(binOp.getJmmChild(1).get("value")).append("\n");
             }
         }
-        jasminCode.append("iload_").append(Integer.toString(register1)).append("\n");
-        jasminCode.append("iload_").append(Integer.toString(register2)).append("\n");
+
+        // missing binOp-Id, intLiteral-Id
+
         switch (op) {
             case "add":
                 jasminCode.append("iadd\n");
@@ -197,8 +240,9 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         if (returnExp.getJmmChild(0).getKind().equals("IntLiteral")) {
             if (Integer.parseInt(returnExp.getJmmChild(0).get("value")) > 5 || Integer.parseInt(returnExp.getJmmChild(0).get("value")) < -1){
                 jasminCode.append("bipush ").append(returnExp.getJmmChild(0).get("value")).append("\n");
+            } else {
+                jasminCode.append("iconst_").append(returnExp.getJmmChild(0).get("value")).append("\n");
             }
-            jasminCode.append("iconst_").append(returnExp.getJmmChild(0).get("value")).append("\n");
             jasminCode.append("ireturn\n");
             return 0;
         }
@@ -277,41 +321,61 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         var arguments = methodCall.getJmmChild(2);
 
         for (var argument : arguments.getChildren()) {
-            var register = -1;
-            for (int i = 0; i < this.varRegisters.size(); ++i) {
-                if (varRegisters.get(i).getName().equals(argument.get("name"))) {
-                    register = i;
+            if (argument.getKind().equals("Id")) {
+                var register = -1;
+                for (int i = 0; i < this.varRegisters.size(); ++i) {
+                    if (varRegisters.get(i).getName().equals(argument.get("name"))) {
+                        register = i;
+                    }
+                }
+                var type = getVariableType(argument.get("name"), method);
+                switch (type) {
+                    case "int":
+                    case "boolean":
+                        jasminCode.append("iload_").append(register).append("\n");
+                        break;
+                    case "integer array":
+                    case "string array":
+                        jasminCode.append("aload_").append(register).append("\n");
+                        break;
                 }
             }
-            var type = getVariableType(argument.get("name"), method);
-            switch (type) {
-                case "int":
-                case "boolean":
-                    jasminCode.append("iload_").append(register).append("\n");
-                    break;
-                case "integer array":
-                case "string array":
-                    jasminCode.append("aload_").append(register).append("\n");
-                    break;
+
+            else if (argument.getKind().equals("IntLiteral")) {
+                if (Integer.parseInt(argument.get("value")) > 5 || Integer.parseInt(argument.get("value")) < -1){
+                    jasminCode.append("bipush ").append(argument.get("value")).append("\n");
+                }
+                else
+                    jasminCode.append("iconst_").append(argument.get("value")).append("\n");
+            }
+
+            else if (argument.getKind().equals("BinOp")) {
+                visit(argument);
             }
         }
 
         jasminCode.append("invokestatic ").append(caller).append("/").append(callee).append("(");
         for (var argument : arguments.getChildren()) {
-            var type = getVariableType(argument.get("name"), method);
-            switch (type) {
-                case "int":
-                    jasminCode.append("I");
-                    break;
-                case "boolean":
-                    jasminCode.append("Z");
-                    break;
-                case "integer array":
-                    jasminCode.append("[I");
-                    break;
-                case "string array":
-                    jasminCode.append("[Ljava/lang/String;");
-                    break;
+            if (argument.getKind().equals("Id")) {
+                var type = getVariableType(argument.get("name"), method);
+                switch (type) {
+                    case "int":
+                        jasminCode.append("I");
+                        break;
+                    case "boolean":
+                        jasminCode.append("Z");
+                        break;
+                    case "integer array":
+                        jasminCode.append("[I");
+                        break;
+                    case "string array":
+                        jasminCode.append("[Ljava/lang/String;");
+                        break;
+                }
+            }
+
+            else if (argument.getKind().equals("IntLiteral") || argument.getKind().equals("BinOp")) {
+                jasminCode.append("I");
             }
         }
         jasminCode.append(")V").append("\n");
