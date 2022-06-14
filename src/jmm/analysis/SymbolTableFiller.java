@@ -30,6 +30,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         addVisit("Assignment", this::assignmentVisit);
         addVisit("Condition", this::conditionVisit);
         addVisit("Arguments", this::argumentsVisit);
+        addVisit("ArrayAssignment", this::arrayAssignVisit);
     }
 
     public List<Report> getReports() {
@@ -332,7 +333,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
             if (call.get("name").equals("this")) {
                 if (methodCall.getJmmChild(1).getKind().equals("Id")) { // CHECK IF METHOD AFTER THIS IS IN CLASS
                     var callee = methodCall.getJmmChild(1).get("name");
-                    if (symbolTable.getMethods().contains(callee)) {
+                    if (symbolTable.getMethods().contains(callee) || symbolTable.toString() != null) {
                         return 0;
                     }
                     reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(methodCall.get("line")), Integer.parseInt(methodCall.get("col")), "method '" + callee + "' does not belong to class", null));
@@ -353,6 +354,12 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                 }
                 for (var variable : symbolTable.getLocalVariables(method)) {
                     if (call.get("name").equals(variable.getName())) {
+                        has = true;
+                        break;
+                    }
+                }
+                for (var param : symbolTable.getParameters(method)) {
+                    if (call.get("name").equals(param.getName())) {
                         has = true;
                         break;
                     }
@@ -508,6 +515,40 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                     reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arguments.get("line")), Integer.parseInt(arguments.get("col")), "argument of type int does not match with param", null));
                     return -1;
                 }
+            }
+        }
+        return 0;
+    }
+
+    private Integer arrayAssignVisit(JmmNode arrayAssign, SymbolTableBuilder symbolTable) {
+        var method = arrayAssign.getAncestor("MethodDeclaration").get().get("name");
+        if (!symbolTable.getVariableType(arrayAssign.get("name"), method).equals("integer array") && !symbolTable.getVariableType(arrayAssign.get("name"), method).equals("string array")) {
+            reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arrayAssign.get("line")), Integer.parseInt(arrayAssign.get("col")), "'" + arrayAssign.get("name") + "' is not array", null));
+            return -1;
+        }
+        if (arrayAssign.getJmmChild(0).getKind().equals("Bool")) {
+            reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arrayAssign.get("line")), Integer.parseInt(arrayAssign.get("col")), "array index must be int", null));
+            return -1;
+        }
+        if (arrayAssign.getJmmChild(0).getKind().equals("Id")) {
+            if (symbolTable.getVariableType(arrayAssign.getJmmChild(0).get("name"), method).equals("int")) {
+                return 0;
+            }
+            else {
+                reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arrayAssign.get("line")), Integer.parseInt(arrayAssign.get("col")), "array index must be int", null));
+                return -1;
+            }
+        }
+        if (arrayAssign.getJmmChild(1).getKind().equals("IntLiteral")) {
+            return 0;
+        }
+        if (arrayAssign.getJmmChild(1).getKind().equals("Id")) {
+            if (symbolTable.getVariableType(arrayAssign.getJmmChild(1).get("name"), method).equals("int")) {
+                return 0;
+            }
+            else {
+                reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arrayAssign.get("line")), Integer.parseInt(arrayAssign.get("col")), "array element must be int", null));
+                return -1;
             }
         }
         return 0;

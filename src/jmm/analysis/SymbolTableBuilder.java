@@ -111,7 +111,7 @@ public class SymbolTableBuilder implements SymbolTable {
         if (localVariables.isEmpty() && methodParams.isEmpty() && fields.isEmpty())
                 return "";
         if (!localVariables.isEmpty()) {
-            for (var symbol : localVariables.get(methodName)) {
+            for (var symbol : getLocalVariables(methodName)) {
                 if (symbol.getName().equals(varName)) {
                     return symbol.getType().getName();
                 }
