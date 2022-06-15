@@ -5,13 +5,13 @@
 | Name        | Number    | E-Mail               | GRADE | CONTRIBUTION |
 |-------------|-----------|----------------------|-------|--------------|
 | João Pinho  | 201805000 | up201805000@fe.up.pt | 13    | 45%          |
-| Vasco Alves | 201808031 | up201808031@fe.up.pt | 16    | 55%          |
+| Vasco Alves | 201808031 | up201808031@fe.up.pt | 15    | 55%          |
 
 GLOBAL Grade of the project: 13
 
 It is important to mention that although the other two members of the group didn't work since
 the start of the project, they only confirmed their abandonment on mid-to-late May, which means
-we had to work for four until then.
+we had to work for four until then, therefore being delayed in the development of the project. 
 
 **SUMMARY:**
 
@@ -68,17 +68,25 @@ If there are some missing, it is most likely because we did not remember them, n
 
 **CODE GENERATION:**
 
-We made a parser for this language(Java--) using the grammar that provided to us.
-Then we correct the lexical and syntactic errors, such as left recursion, we create the AST with information in the nodes and leafs that will be useful to us, then, with
-the AST done we create the Symbol Table and make a semantic Analysis.
-Finally, we generated JVM instruction to be accepted by jasmin.
+We start by generating the jasmin code for the Class, Fields and Constructor. Then we generate the
+code for the class methods, with the appropriate parameters and return type. We also assign 
+registers to the local variables and then limit the locals size accordingly.
+
+After, we start generating the code for the instructions within the methods, such as variable
+declarations, assignments, return expressions, binary operations, etc. During this part we had
+difficulty generating the correct code for more complex instructions, such as complex arithmetic
+expressions, while cycles and extensive method calls.
 
 **PROS:**
 
-  - Works great for arithmetic operation.
+  - Grammar has no problems;
+  - We have a lot of semantic analysis;
+  - AST is well annotated;
+  - Symbol Table is correctly built;
+  - Works for simple instructions.
 
 
 **CONS:**
 
-  - Doesn't really work for anything other than that.
+  - Does not work for complex instructions;
   - Code could be better written and organized.
