@@ -68,7 +68,10 @@ If there are some missing, it is most likely because we did not remember them, n
 
 **CODE GENERATION:**
 
-
+We made a parser for this language(Java--) using the grammar that provided to us.
+Then we correct the lexical and syntactic errors, such as left recursion, we create the AST with information in the nodes and leafs that will be useful to us, then, with
+the AST done we create the Symbol Table and make a semantic Analysis.
+Finally, we generated JVM instruction to be accepted by jasmin.
 
 **PROS:**
 
