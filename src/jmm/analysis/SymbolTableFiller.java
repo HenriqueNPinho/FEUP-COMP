@@ -331,9 +331,13 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
         if (methodCall.getJmmChild(0).getKind().equals("Id")) {
             var call = methodCall.getJmmChild(0);
             if (call.get("name").equals("this")) {
+                if (methodCall.getAncestor("MethodDeclaration").get().getOptional("static").isPresent()) {
+                    reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(methodCall.get("line")), Integer.parseInt(methodCall.get("col")), "can not use 'this' in static method", null));
+                    return -1;
+                }
                 if (methodCall.getJmmChild(1).getKind().equals("Id")) { // CHECK IF METHOD AFTER THIS IS IN CLASS
                     var callee = methodCall.getJmmChild(1).get("name");
-                    if (symbolTable.getMethods().contains(callee) || symbolTable.toString() != null) {
+                    if (symbolTable.getMethods().contains(callee) || symbolTable.getSuper() != null) {
                         return 0;
                     }
                     reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(methodCall.get("line")), Integer.parseInt(methodCall.get("col")), "method '" + callee + "' does not belong to class", null));
@@ -388,6 +392,14 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                     return 0;
                 }
                 if (!symbolTable.getMethods().contains(name2)) {
+                    var classDecl = methodCall.getAncestor("ClassDeclaration");
+                    for (var child : classDecl.get().getChildren()) {
+                        if (child.getKind().equals("MethodDeclaration")) {
+                            if (child.get("name").equals(name2)) {
+                                return 0;
+                            }
+                        }
+                    }
                     reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(methodCall.get("line")), Integer.parseInt(methodCall.get("col")), "method '" + name2 + "' is not declared", null));
                     return -1;
                 }
@@ -483,11 +495,7 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
 
     private Integer argumentsVisit(JmmNode arguments, SymbolTableBuilder symbolTable) {
         var method = arguments.getAncestor("MethodDeclaration").get().get("name");
-        if (symbolTable.getMethods().contains(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")) && symbolTable.getParameters(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")).isEmpty()) {
-            return 0;
-        }
-
-        if (arguments.getNumChildren() == 0) {
+        if (symbolTable.getMethods().contains(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")) && symbolTable.getParameters(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")).isEmpty() && arguments.getNumChildren() == 0) {
             return 0;
         }
 
@@ -498,6 +506,19 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                         reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arguments.get("line")), Integer.parseInt(arguments.get("col")), "argument '" + arguments.getJmmChild(i).get("name") + "' does not exist", null));
                         return -1;
                     }
+                    else {
+                        var classDecl = arguments.getAncestor("ClassDeclaration");
+                        for (var child : classDecl.get().getChildren()) {
+                            if (child.getKind().equals("MethodDeclaration")) {
+                                if (child.get("name").equals(arguments.getJmmParent().getJmmChild(1).get("name"))) {
+                                    if (!symbolTable.getVariableType(arguments.getJmmChild(i).get("name"), method).equals(child.getJmmChild(0).getJmmChild(i).get("type"))) {
+                                        reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arguments.get("line")), Integer.parseInt(arguments.get("col")), "argument type is not correct", null));
+                                        return -1;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
             return 0;
@@ -505,7 +526,14 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
 
         for (int i = 0; i < arguments.getNumChildren(); ++i) {
             if (arguments.getJmmChild(i).getKind().equals("Id")) {
-                if (!symbolTable.getVariableType(arguments.getJmmChild(i).get("name"), method).equals(symbolTable.getParameters(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")).get(i).getType().getName())) {
+                String type;
+                if (arguments.getJmmChild(i).get("name").equals("this")) {
+                    type = symbolTable.getClassName();
+                } else {
+                    type = symbolTable.getVariableType(arguments.getJmmChild(i).get("name"), method);
+                }
+
+                if (!type.equals(symbolTable.getParameters(arguments.getAncestor("MethodCall").get().getJmmChild(1).get("name")).get(i).getType().getName())) {
                     reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(arguments.get("line")), Integer.parseInt(arguments.get("col")), "argument of type '" + symbolTable.getVariableType(arguments.getJmmChild(i).get("name"), method) + "' does not match with param", null));
                     return -1;
                 }
