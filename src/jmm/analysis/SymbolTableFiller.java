@@ -469,6 +469,12 @@ public class SymbolTableFiller extends PreorderJmmVisitor<SymbolTableBuilder, In
                 return -1;
             }
         }
+        if (assignment.getJmmChild(0).getKind().equals("Bool")) {
+            if (!symbolTable.getVariableType(name, method).equals("boolean")) {
+                reports.add(Report.newError(Stage.SEMANTIC, Integer.parseInt(assignment.get("line")), Integer.parseInt(assignment.get("col")), "can not assign '" + symbolTable.getVariableType(name, method) + "' to boolean", null));
+                return -1;
+            }
+        }
         return 0;
     }
 
