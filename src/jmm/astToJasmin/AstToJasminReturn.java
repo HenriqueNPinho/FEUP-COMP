@@ -5,6 +5,7 @@ public class AstToJasminReturn {
     public static String getJasminType(String jmmType) {
         switch (jmmType) {
             case "integer array":
+                return "[I";
             case "int":
                 return "I";
             case "boolean":
@@ -12,7 +13,7 @@ public class AstToJasminReturn {
             case "void":
                 return "V";
             default:
-                return jmmType;
+                return "L" + jmmType + ";";
         }
     }
 }

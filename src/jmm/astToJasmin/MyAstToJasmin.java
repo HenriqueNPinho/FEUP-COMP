@@ -19,8 +19,6 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
     StringBuilder jasminCode;
     private SymbolTable symbolTable;
     List<Report> reports;
-    int currentStackSize = 0;
-    int maxStackSize = 0;
     List<Symbol> varRegisters;
 
     public MyAstToJasmin(){
@@ -37,6 +35,9 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         addVisit("Assignment", this::assignVisit);
         addVisit("StatementExpression", this::stmtExpVisit);
         addVisit("MethodCall", this::methodCallVisit);
+        addVisit("IfStatement", this::ifStmtVisit);
+        addVisit("IfTrue", this::ifTrueVisit);
+        addVisit("IfFalse", this::ifFalseVisit);
     }
 
     public String getVariableType(String varName, String methodName) {
@@ -116,7 +117,6 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         if (classDecl.getJmmChild(1).getKind().equals("VarDeclaration")) {
             for (var field : symbolTable.getFields()) {
                 jasminCode.append(".field public ").append(AstToJasminField.getCode(field)).append("\n");
-                //varRegisters.add(field);
             }
         }
 
@@ -169,7 +169,7 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
 
         int localVarsSize = varRegisters.size();
 
-        jasminCode.append(".limit stack 99\n").append(".limit locals ").append(localVarsSize).append("\n"); // TODO: Stack size
+        jasminCode.append(".limit stack 50\n").append(".limit locals ").append(localVarsSize).append("\n");
 
         for (var child : methodDecl.getChildren()) {
             visit(child);
@@ -241,12 +241,26 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
             }
         }
 
-        // missing binOp-Id, intLiteral-Id
+        else if (binOp.getJmmChild(0).getKind().equals("Bool") && binOp.getJmmChild(1).getKind().equals("Bool")) {
+            if (binOp.getJmmChild(0).get("value").equals("true")) {
+                jasminCode.append("iconst_1\n");
+            } else {
+                jasminCode.append("iconst_0\n");
+            }
+
+            if (binOp.getJmmChild(1).get("value").equals("true")) {
+                jasminCode.append("iconst_1\n");
+            } else {
+                jasminCode.append("iconst_0\n");
+            }
+        }
+
         switch (op) {
             case "add":
                 jasminCode.append("iadd\n");
                 break;
             case "sub":
+            case "lower":
                 jasminCode.append("isub\n");
                 break;
             case "mult":
@@ -255,6 +269,10 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
             case "div":
                 jasminCode.append("idiv\n");
                 break;
+            case "and":
+                jasminCode.append("iand\n");
+                break;
+
         }
         return 0;
     }
@@ -300,7 +318,6 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
         var method = assign.getAncestor("MethodDeclaration").get().get("name");
         var name = assign.get("name");
         var type = this.getVariableType(name, method);
-        System.out.println(type);
         for (var field : symbolTable.getFields()) {
             if (field.getName().equals(name) && !methodHasParam(method, name) && !methodHasVar(method, name)) {
                 if (assign.getJmmChild(0).getKind().equals("IntLiteral")) {
@@ -325,8 +342,9 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
                     if (Integer.parseInt(assign.getJmmChild(0).get("value")) > 5 || Integer.parseInt(assign.getJmmChild(0).get("value")) < -1){
                         jasminCode.append("bipush ").append(assign.getJmmChild(0).get("value")).append("\n");
                     }
-                    else
+                    else {
                         jasminCode.append("iconst_").append(assign.getJmmChild(0).get("value")).append("\n");
+                    }
                 }
                 else if (assign.getJmmChild(0).getKind().equals("Id")) {
                     int aux=0;
@@ -336,6 +354,11 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
                         }
                     }
                     jasminCode.append("iload_").append(aux).append("\n");
+                }
+                for (var child : assign.getChildren()) {
+                    if (child.getKind().equals("BinOp")) {
+                        visit(child);
+                    }
                 }
                 jasminCode.append("istore_").append(register).append("\n");
         }
@@ -380,8 +403,9 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
                 if (Integer.parseInt(argument.get("value")) > 5 || Integer.parseInt(argument.get("value")) < -1){
                     jasminCode.append("bipush ").append(argument.get("value")).append("\n");
                 }
-                else
+                else {
                     jasminCode.append("iconst_").append(argument.get("value")).append("\n");
+                }
             }
 
             else if (argument.getKind().equals("BinOp")) {
@@ -414,6 +438,58 @@ public class MyAstToJasmin extends AJmmVisitor<Integer, Integer> implements AstT
             }
         }
         jasminCode.append(")V").append("\n");
+        return 0;
+    }
+
+    private Integer ifStmtVisit(JmmNode ifStmt, Integer dummy) {
+        var condition = ifStmt.getJmmChild(0).getJmmChild(0);
+        if (condition.getKind().equals("Id")) {
+            var register = -1;
+            for (int i = 0; i < this.varRegisters.size(); ++i) {
+                if (varRegisters.get(i).getName().equals(condition.get("name"))) {
+                    register = i;
+                    jasminCode.append("iload_").append(register).append("\n");
+                }
+            }
+        }
+        var children = ifStmt.getAncestor("MethodDeclaration").get().getChildren();
+        for (var child : children) {
+            if (child.getKind().equals("Assignment") && child.get("name").equals(ifStmt.getJmmChild(0).getJmmChild(0).get("name"))) {
+                if (child.getJmmChild(0).getKind().equals("BinOp")) {
+                    if (child.getJmmChild(0).get("op").equals("lower")) {
+                        jasminCode.append("ifgt Label1\n");
+                    } else {
+                        jasminCode.append("ifeq Label1\n");
+                    }
+                }
+            }
+        }
+        for (var child : ifStmt.getChildren()) {
+            if (!child.getKind().equals("Condition")) {
+                visit(child);
+            }
+        }
+        return 0;
+    }
+
+    private Integer ifTrueVisit(JmmNode ifTrue, Integer dummy){
+        for (var child : ifTrue.getChildren()) {
+            for (var child2 : child.getChildren()) {
+                visit(child2);
+            }
+        }
+        jasminCode.append("goto Label2\n");
+        return 0;
+    }
+
+    private Integer ifFalseVisit(JmmNode ifFalse, Integer dummy){
+        jasminCode.append("Label1:\n");
+        for (var child : ifFalse.getChildren()) {
+            for (var child2 : child.getChildren()) {
+                visit(child2);
+            }
+        }
+        jasminCode.append("Label2:\n");
         return 0;
     }
 
